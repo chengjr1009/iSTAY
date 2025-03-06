@@ -444,7 +444,7 @@ head(output_hier_q, 10)
 ```{r, echo=F}
 data("Jena_hierarchical_biomass_data")
 data("Jena_hierarchical_mat")
-output_hier_q <- Stay_Hier(data=Jena_hierarchical_biomass_data, mat=Jena_hierarchical_mat,
+output_hier_q <- Stay_Hier(data=Jena_hierarchical_biomass_data, mat=Jena_hierarchical_mat |> mutate(Species = paste0(Plot, Species)),
                            order.q=seq(0.1,2,0.1), Alltime=TRUE)
 head(cbind(output_hier_q[,1:2], round(output_hier_q[,3:6],3)), 10)
 ```
