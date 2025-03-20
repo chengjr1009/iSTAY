@@ -23,7 +23,7 @@ library(iStay)
 <font color=#FF6600>
 </font>
 
-`iStay` (information-based measures of stability and related synchrony) is an R package for featuring a class of measures of community/ecosystem stability and related synchrony; the corresponding diversity-stability is also assessed if biodiversity data are available. The information-based measures of stability were developed based on the generalized entropy parametrized by an order q > 0; see Chao et al. (2024) for the relevant theory and methodological background. All measures are illustrated by using biomass temporal data from the Jena experiment (Wagg et al. 2022).
+`iStay` (Hill-number-based measures of stability and related synchrony) is an R package for featuring a class of measures of community/ecosystem stability and related synchrony; the corresponding diversity-stability is also assessed if biodiversity data are available. The Hill-number-based measures of stability were developed based on the Hill-number parametrized by an order q > 0; see Chao et al. (2024) for the relevant theory and methodological background. All measures are illustrated by using biomass temporal data from the Jena experiment (Wagg et al. 2022).
 
 Specifically, iStay features the following measures separately for three cases:
 
@@ -230,8 +230,8 @@ Run the following code to obtain diversity-plot stability relationship. Need to 
 ```{r, eval=FALSE}
 output_single_div <- Stay_Single(data=single_plot, order.q=c(1,2), Alltime=TRUE)
 output_single_div <- data.frame(output_single_div,
-                                sowndiv=as.numeric(do.call(rbind,
-                                                   strsplit(output_single_div[,1],"[._]+"))[,2]),
+                                log2_sowndiv=log2(as.numeric(do.call(rbind,
+                                                   strsplit(output_single_div[,1],"[._]+"))[,2])),
                                 block=do.call(rbind, strsplit(output_single_div[,1],"[._]+"))[,1])
 colnames(output_single_div)[1] <- c("Plot/Community")
 head(output_single_div, 10)
@@ -240,15 +240,15 @@ head(output_single_div, 10)
 ```{r, echo=FALSE}
 output_single_div <- Stay_Single(data=single_plot, order.q=c(1,2), Alltime=TRUE)
 output_single_div <- data.frame(output_single_div,
-                                sowndiv=as.numeric(do.call(rbind,
-                                                   strsplit(output_single_div[,1],"[._]+"))[,2]),
+                                log2_sowndiv=log2(as.numeric(do.call(rbind,
+                                                   strsplit(output_single_div[,1],"[._]+"))[,2])),
                                 block=do.call(rbind, strsplit(output_single_div[,1],"[._]+"))[,1])
 colnames(output_single_div)[1] <- c("Plot/Community")
 head(output_single_div, 10)
 ```
 
 ```{r,fig.width = 7}
-ggStay_analysis(output=output_single_div, x_variable="sowndiv", 
+ggStay_analysis(output=output_single_div, x_variable="log2_sowndiv", 
                 by_group="block", model="LMM")
 ```
 
@@ -286,21 +286,21 @@ Run the following code to obtain diversity-plot stability relationship. Need to 
 
 ```{r, eval=FALSE}
 output_multi_div <- Stay_Multiple(data=multiple_plot, order.q=c(1,2), Alltime=TRUE)
-output_multi_div <- data.frame(output_multi_div, sowndiv=rep(c(16,8,4,2,1),8),
+output_multi_div <- data.frame(output_multi_div, log2_sowndiv=rep(c(4,3,2,1,0),8),
                                block=rep(rep(c("B1","B2","B3","B4"),each=5),2))
 head(output_multi_div, 10)
 ```
 
 ```{r, echo=FALSE}
 output_multi_div <- Stay_Multiple(data=multiple_plot, order.q=c(1,2), Alltime=TRUE)
-output_multi_div <- data.frame(output_multi_div, sowndiv=rep(c(16,8,4,2,1),8),
+output_multi_div <- data.frame(output_multi_div, log2_sowndiv=rep(c(4,3,2,1,0),8),
                                block=rep(rep(c("B1","B2","B3","B4"),each=5),2))
 rownames(output_multi_div) <- NULL
 head(cbind(output_multi_div[,1:2], round(output_multi_div[3:6],3), output_multi_div[,7:8]), 10)
 ```
 
 ```{r,fig.width = 8, fig.height=9.5}
-ggStay_analysis(output=output_multi_div, x_variable="sowndiv", 
+ggStay_analysis(output=output_multi_div, x_variable="log2_sowndiv", 
                     by_group="block", model="LMM")
 ```
 
@@ -342,8 +342,8 @@ Run the following code to obtain diversity-plot stability relationship. Need to 
 output_single_species_div <- Stay_Single(data=single_species,
                                          order.q=c(1,2), Alltime=TRUE)
 output_single_species_div <- data.frame(output_single_species_div,
-                              sowndiv=as.numeric(do.call(rbind,
-                                      strsplit(output_single_species_div[,1],"[._]+"))[,3]),
+                              log2_sowndiv=log2(as.numeric(do.call(rbind,
+                                      strsplit(output_single_species_div[,1],"[._]+"))[,3])),
                               block=do.call(rbind,
                                     strsplit(output_single_species_div[,1],"[._]+"))[,2])
 head(output_single_species_div, 10)
@@ -353,15 +353,15 @@ head(output_single_species_div, 10)
 output_single_species_div <- Stay_Single(data=single_species,
                                          order.q=c(1,2), Alltime=TRUE)
 output_single_species_div <- data.frame(output_single_species_div,
-                              sowndiv=as.numeric(do.call(rbind,
-                                      strsplit(output_single_species_div[,1],"[._]+"))[,3]),
+                             log2_sowndiv=log2(as.numeric(do.call(rbind,
+                                      strsplit(output_single_species_div[,1],"[._]+"))[,3])),
                               block=do.call(rbind,
                                     strsplit(output_single_species_div[,1],"[._]+"))[,2])
 head(output_single_species_div, 10)
 ```
 
 ```{r,fig.width = 7}
-ggStay_analysis(output=output_single_species_div, x_variable="sowndiv",
+ggStay_analysis(output=output_single_species_div, x_variable="log2_sowndiv",
                     by_group="block", model="LMM")
 ```
 
@@ -401,8 +401,8 @@ Run the following code to obtain diversity-plot stability relationship. Need to 
 output_multi_species_div <- Stay_Multiple(data=multiple_species,
                                           order.q=c(1,2), Alltime=TRUE)
 output_multi_species_div <- data.frame(output_multi_species_div,
-                             sowndiv=as.numeric(do.call(rbind,
-                                     strsplit(output_multi_species_div[,1],"_"))[,3]),
+                             log2_sowndiv=log2(as.numeric(do.call(rbind,
+                                      strsplit(output_multi_species_div[,1],"[._]+"))[,3])),
                              block=do.call(rbind,
                                    strsplit(output_multi_species_div[,1],"_"))[,2])
 head(output_multi_species_div, 10)
@@ -412,8 +412,8 @@ head(output_multi_species_div, 10)
 output_multi_species_div <- Stay_Multiple(data=multiple_species,
                                           order.q=c(1,2), Alltime=TRUE)
 output_multi_species_div <- data.frame(output_multi_species_div,
-                             sowndiv=as.numeric(do.call(rbind,
-                                     strsplit(output_multi_species_div[,1],"_"))[,3]),
+                             log2_sowndiv=log2(as.numeric(do.call(rbind,
+                                      strsplit(output_multi_species_div[,1],"[._]+"))[,3])),
                              block=do.call(rbind,
                                    strsplit(output_multi_species_div[,1],"_"))[,2])
 rownames(output_multi_species_div) <- NULL
@@ -421,7 +421,7 @@ head(output_multi_species_div, 10)
 ```
 
 ```{r,fig.width = 8, fig.height=9.5}
-ggStay_analysis(output=output_multi_species_div, x_variable="sowndiv",
+ggStay_analysis(output=output_multi_species_div, x_variable="log2_sowndiv",
                     by_group="block", model="LMM")
 ```
 
@@ -442,6 +442,8 @@ head(output_hier_q, 10)
 ```
 
 ```{r, echo=F}
+library(tidyverse)
+
 data("Jena_hierarchical_biomass_data")
 data("Jena_hierarchical_mat")
 output_hier_q <- Stay_Hier(data=Jena_hierarchical_biomass_data, mat=Jena_hierarchical_mat |> mutate(Species = paste0(Plot, Species)),
