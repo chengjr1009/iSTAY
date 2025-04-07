@@ -1218,19 +1218,21 @@ ggStay_analysis <- function(output, x_variable, by_group=NULL, model="LMM"){
     plotdata_Stab$Order_q <- as.factor(plotdata_Stab$Order_q)
     
     if(!any(plotdata_Stab$sign == "non-significant")) {
-      dummy <- plotdata_Stab[1, ]
-      dummy$Xvariable <- NA 
-      dummy$pred <- NA
-      dummy$Stability <- NA
-      dummy$sign <- "non-significant"
+      dummy <- plotdata_Stab[1:4, ]
+      dummy$Xvariable <- rep(NA, 4) 
+      dummy$pred <- rep(NA, 4)
+      dummy$Stability <- rep(NA, 4)
+      dummy$type <- c("Gamma","Alpha","Beta","Synchrony")
+      dummy$sign <- rep("non-significant", 4)
       plotdata <- rbind(plotdata_Stab, dummy)
     }
     if(!any(plotdata_Stab$sign == "significant")) {
-      dummy <- plotdata_Stab[1, ]
-      dummy$Xvariable <- NA 
-      dummy$pred <- NA
-      dummy$Stability <- NA
-      dummy$sign <- "significant"
+      dummy <- plotdata_Stab[1:4, ]
+      dummy$Xvariable <- rep(NA, 4) 
+      dummy$pred <- rep(NA, 4)
+      dummy$Stability <- rep(NA, 4)
+      dummy$type <- c("Gamma","Alpha","Beta","Synchrony")
+      dummy$sign <- rep("significant", 4)
       plotdata <- rbind(plotdata_Stab, dummy)
     }
 
