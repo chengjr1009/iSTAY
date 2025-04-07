@@ -963,6 +963,23 @@ ggStay_analysis <- function(output, x_variable, by_group=NULL, model="LMM"){
 
     slope_text <- data.frame(slope = paste("slope = ",round(lm_slope[,1],4),sep=""),
                              Order_q = rownames(lm_slope))
+    
+    if(!any(plotdata$sign == "non-significant")) {
+      dummy <- plotdata[1, ]
+      dummy$Xvariable <- NA 
+      dummy$pred <- NA
+      dummy$Stability <- NA
+      dummy$significance <- "non-significant"
+      plotdata <- rbind(plotdata, dummy)
+    }
+    if(!any(plotdata$sign == "significant")) {
+      dummy <- plotdata[1, ]
+      dummy$Xvariable <- NA 
+      dummy$pred <- NA
+      dummy$Stability <- NA
+      dummy$significance <- "significant"
+      plotdata <- rbind(plotdata, dummy)
+    }
 
     if(model=="LMM"){
       plotdata_text_part$Order_q <- as.factor(plotdata_text_part$Order_q)
@@ -1199,6 +1216,23 @@ ggStay_analysis <- function(output, x_variable, by_group=NULL, model="LMM"){
     plotdata_Stab$sign <- factor(plotdata_Stab$sign, levels=c("significant", "non-significant"))
     plotdata_Stab$type <- factor(plotdata_Stab$type, levels = c("Gamma","Alpha","Beta","Synchrony"))
     plotdata_Stab$Order_q <- as.factor(plotdata_Stab$Order_q)
+    
+    if(!any(plotdata_Stab$sign == "non-significant")) {
+      dummy <- plotdata[1, ]
+      dummy$Xvariable <- NA 
+      dummy$pred <- NA
+      dummy$Stability <- NA
+      dummy$significance <- "non-significant"
+      plotdata <- rbind(plotdata, dummy)
+    }
+    if(!any(plotdata_Stab$sign == "significant")) {
+      dummy <- plotdata[1, ]
+      dummy$Xvariable <- NA 
+      dummy$pred <- NA
+      dummy$Stability <- NA
+      dummy$significance <- "significant"
+      plotdata <- rbind(plotdata, dummy)
+    }
 
 
     # plotdata$sign_S <- factor(plotdata$sign_S, levels=c("significant", "non-significant"))
