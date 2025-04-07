@@ -798,7 +798,7 @@ ggStay_qprofile <- function(output){
 #' @param model specifying the fitting model, \code{model = "lm"} for linear model; \code{model = "LMM"} for linear mixed model with random effects for intercept and slope. Default is \code{model = "LMM"}.
 #'
 #'
-#' @import ggplot2
+#' @import tidyverse
 #' @import stringr
 #' @import lme4
 #' @import lmerTest
