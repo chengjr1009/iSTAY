@@ -969,7 +969,7 @@ ggStay_analysis <- function(output, x_variable, by_group=NULL, model="LMM"){
       dummy$Xvariable <- NA 
       dummy$pred <- NA
       dummy$Stability <- NA
-      dummy$significance <- "non-significant"
+      dummy$sign <- "non-significant"
       plotdata <- rbind(plotdata, dummy)
     }
     if(!any(plotdata$sign == "significant")) {
@@ -977,7 +977,7 @@ ggStay_analysis <- function(output, x_variable, by_group=NULL, model="LMM"){
       dummy$Xvariable <- NA 
       dummy$pred <- NA
       dummy$Stability <- NA
-      dummy$significance <- "significant"
+      dummy$sign <- "significant"
       plotdata <- rbind(plotdata, dummy)
     }
 
@@ -1222,7 +1222,7 @@ ggStay_analysis <- function(output, x_variable, by_group=NULL, model="LMM"){
       dummy$Xvariable <- NA 
       dummy$pred <- NA
       dummy$Stability <- NA
-      dummy$significance <- "non-significant"
+      dummy$sign <- "non-significant"
       plotdata <- rbind(plotdata, dummy)
     }
     if(!any(plotdata_Stab$sign == "significant")) {
@@ -1230,7 +1230,7 @@ ggStay_analysis <- function(output, x_variable, by_group=NULL, model="LMM"){
       dummy$Xvariable <- NA 
       dummy$pred <- NA
       dummy$Stability <- NA
-      dummy$significance <- "significant"
+      dummy$sign <- "significant"
       plotdata <- rbind(plotdata, dummy)
     }
 
