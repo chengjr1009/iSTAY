@@ -1223,7 +1223,7 @@ ggStay_analysis <- function(output, x_variable, by_group=NULL, model="LMM"){
       dummy$pred <- NA
       dummy$Stability <- NA
       dummy$sign <- "non-significant"
-      plotdata <- rbind(plotdata, dummy)
+      plotdata <- rbind(plotdata_Stab, dummy)
     }
     if(!any(plotdata_Stab$sign == "significant")) {
       dummy <- plotdata[1, ]
@@ -1231,7 +1231,7 @@ ggStay_analysis <- function(output, x_variable, by_group=NULL, model="LMM"){
       dummy$pred <- NA
       dummy$Stability <- NA
       dummy$sign <- "significant"
-      plotdata <- rbind(plotdata, dummy)
+      plotdata <- rbind(plotdata_Stab, dummy)
     }
 
 
