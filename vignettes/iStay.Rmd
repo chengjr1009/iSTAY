@@ -449,7 +449,6 @@ head(output_hier_q, 10)
 ```
 
 ```{r, echo=F}
-library(tidyverse)
 
 data("Jena_hierarchical_biomass_data")
 data("Jena_hierarchical_mat")
