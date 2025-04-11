@@ -1,3 +1,10 @@
+
+utils::globalVariables(c(
+  "Alpha", "Gamma", "Gvariable", "Hier", "Plot/Community", "Xvariable",
+  "coef", "intercept", "lm", "pred", "slope",
+  "type", "value", "x_max", "x_min"
+))
+
 #' Calculate stability of the time series data for single assemblage.
 #'
 #' \code{Stay_Single} is a function that calculate stability of the time series data (like biomass, productivity, etc.) for single assemblage.
@@ -335,7 +342,7 @@ Stay_Hier <- function (data, mat, order.q = c(1, 2), Alltime = TRUE, start_T = N
   
   out <- cbind(out, sapply(order.q, S_alpha))
   
-  # 計算 最高層 Synchrony
+  # Highiest Level Synchrony
   beta <- out[,2] - out[,3]
   
   J <- unique(mat[, 1])
@@ -528,8 +535,8 @@ ggStay_qprofile <- function(output){
       outtype <- "hier"
     }
   }else{
-    if(length(which(colnames(output)=="Site"))==0 | length(which(colnames(output)=="Order_q"))==0 | length(which(colnames(output)=="Gamma"))==0
-       | length(which(colnames(output)=="Alpha"))==0 | length(which(colnames(output)=="Beta"))==0　
+    if(length(which(colnames(output)=="Site"))==0 | length(which(colnames(output)=="Order_q"))==0 | length(which(colnames(output)=="Gamma"))== 0
+       | length(which(colnames(output)=="Alpha"))==0 | length(which(colnames(output)=="Beta"))==0
        | length(which(colnames(output)=="Synchrony"))==0){
       stop('Please put the complete output of "Stay_Single", "Stay_Multiple" or "Stay_Hier" function.')
     }else{
@@ -877,7 +884,7 @@ ggStay_analysis <- function(output, x_variable, by_group=NULL, model="LMM"){
     }
   }else{
     if(length(which(colnames(output)=="Site"))==0 | length(which(colnames(output)=="Order_q"))==0 | length(which(colnames(output)=="Gamma"))==0
-       | length(which(colnames(output)=="Alpha"))==0 | length(which(colnames(output)=="Beta"))==0　
+       | length(which(colnames(output)=="Alpha"))==0 | length(which(colnames(output)=="Beta"))==0 
        | length(which(colnames(output)=="Synchrony"))==0){
       stop('Please put the complete output of "Stay_Single" or "Stay_Multiple" function.')
     }

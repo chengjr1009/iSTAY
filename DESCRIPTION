@@ -8,7 +8,6 @@ Description: Provide simple functions to (i) calculate the order q of stability 
 License: GPL (>= 3)
 Imports: ggplot2,
          stringr,
-         lme4,
          lmerTest,
          dplyr,
          ggpubr
