@@ -6,7 +6,7 @@
   Measuring ecological stability and synchrony.
 }
 \description{
-  \code{iStay} (information-based measures of stability and related synchrony) is an R package for featuring a class of measures of community/ecosystem stability and related synchrony; the corresponding diversity-stability is also assessed if biodiversity data are available. The information-based measures of stability were developed based on the generalized entropy parametrized by an order q > 0; see Chao et al. (2024) for the relevant theory and methodological background. All measures are illustrated by using biomass temporal data from the Jena experiment (Wagg et al. 2022).  \cr
+  \code{iStay} (information-based measures of stability and related synchrony) is an R package for featuring a class of measures of community/ecosystem stability and related synchrony; the corresponding diversity-stability is also assessed if biodiversity data are available. The information-based measures of stability were developed based on the Hill-number parametrized by an order q > 0; see Chao et al. (2024) for the relevant theory and methodological background. All measures are illustrated by using biomass temporal data from the Jena experiment (Wagg et al. 2022).  \cr
 
 Specifically, iStay features the following measures separately for three cases:
 
