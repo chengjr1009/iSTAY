@@ -50,7 +50,8 @@ output_single_species_div <- data.frame(output_single_species_div,
                               strsplit(output_single_species_div[,1],"[._]+"))[,3])),
                               block=do.call(rbind, strsplit(output_single_species_div[,1],"[._]+"))[,2])
 
-ggStay_analysis(output = output_single_species_div, x_variable = "log2_sowndiv", by_group = "block", model = "LMM")
+ggStay_analysis(output = output_single_species_div, x_variable = "log2_sowndiv",
+                by_group = "block", model = "LMM")
 
 
 ## Multiple assemblages
@@ -63,7 +64,7 @@ output_multi_plot_div <- data.frame(output_multi_plot_div,
                                block = do.call(rbind, strsplit(output_multi_plot_div[, 1], "_"))[, 1])
 
 ggStay_analysis(output = output_multi_plot_div, x_variable= "log2_sowndiv",
-                    by_group = "block", model = "LMM")
+                by_group = "block", model = "LMM")
 
 # Stability of multiple species in plot
 multiple_species <- Jena_species_biomass_data
