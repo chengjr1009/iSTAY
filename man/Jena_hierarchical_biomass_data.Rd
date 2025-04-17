@@ -5,7 +5,7 @@
 Hierarchical biomass data of Jena experiment
 }
 \description{
-  This data includes the biomass time series of every plant species in each plot. For each plot, there are 1, 2, 4, 8 or 16 plant species. Total are 462 plant species which is equal to the number of row for this data. And since the biomass of each species in 2004 was not recorded in the Jena experiment, the number of columns in this data is 16, namely 2003 and 2005-2019.
+  This data includes the biomass time series of every plant species in each plot. For each plot, there are 1, 2, 4, 8 or 16 plant species. Total are 462 plant species which is equal to the number of row for this data. And since the biomass of each species in 2004 was not recorded in the Jena experiment, the number of columns in this data is 21, namely 2003 and 2005-2024.
 }
 \usage{data(Jena_hierarchical_biomass_data)}
 \format{
