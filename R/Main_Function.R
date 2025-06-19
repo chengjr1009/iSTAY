@@ -59,13 +59,12 @@ Stay_Single <- function (data, order.q = c(1, 2), Alltime = TRUE, start_T = NULL
     }
     else {
       K <- length(vector)
-      vector[which(vector == 0)] <- 10^(-15)
       if (q == 1) {
-        H <- sum((vector / sum(vector)) * log(vector / sum(vector))) * (-1)
+        H <- sum((vector[vector > 0] / sum(vector)) * log(vector[vector > 0] / sum(vector))) * (-1)
         out <- (exp(H) - 1) / (K - 1)
       }
       else {
-        up <- 1 - (sum((vector / sum(vector))^q))^(1 / (1-q))
+        up <- 1 - (sum((vector[vector > 0] / sum(vector))^q))^(1 / (1-q))
         out <- up / (1 - K)
       }
     }
@@ -142,7 +141,6 @@ Stay_Multiple <- function (data, order.q = c(1, 2), Alltime = TRUE, start_T = NU
       ZZ <- ZZ[-which(z_iplus == 0), ]
     }
     ZZ <- as.matrix(ZZ)
-    ZZ[which(ZZ == 0)] <- 10^(-15)
     z_iplus <- apply(ZZ, 1, sum)
     z_plusk <- apply(ZZ, 2, sum)
     z_plusplus <- sum(ZZ)
@@ -151,11 +149,9 @@ Stay_Multiple <- function (data, order.q = c(1, 2), Alltime = TRUE, start_T = NU
     ww <- z_iplus / z_plusplus
     if (q == 1) {
       p_i_new <- p_i
-      p_i_new[which(p_i_new == 0)] <- 10^(-15)
       p_pool_new <- p_pool
-      p_pool_new[which(p_pool_new == 0)] <- 10^(-15)
-      alpha <- (exp(-sum((ZZ / z_plusplus) * log(ZZ / z_iplus))) - 1) / (K - 1)
-      gamma <- (exp(-sum(p_pool * log(p_pool_new))) - 1) / (K - 1)
+      alpha <- (exp(-sum((ZZ[ZZ > 0] / z_plusplus) * log(ZZ[ZZ > 0] / z_iplus))) - 1) / (K - 1)
+      gamma <- (exp(-sum(p_pool[p_pool > 0] * log(p_pool_new[p_pool_new > 0]))) - 1) / (K - 1)
     } else {
       alpha <- (sum(z_iplus / z_plusplus * (ZZ / z_iplus)^q)^(1 / (1-q)) - 1) / (K - 1)
       gamma <- (sum(p_pool^q)^(1 / (1 - q)) - 1) / (K - 1)
@@ -248,7 +244,6 @@ Stay_Multiple <- function (data, order.q = c(1, 2), Alltime = TRUE, start_T = NU
   return(result)
 }
 
-
 #' Calculate stability of the time series data for hierarchical structure.
 #'
 #' \code{Stay_Hier} is a function that calculate stability of the time series data (like biomass, productivity, etc.) for hierarchical structure.
@@ -286,7 +281,6 @@ Stay_Hier <- function (data, mat, order.q = c(1, 2), Alltime = TRUE, start_T = N
     mat <- mat[-del, ]
   }
   data <- as.matrix(data)
-  # data[which(data == 0)] <- 10^(-15)
   
   N <- sum(data)
   G <- apply(data, 2, sum) / N
