@@ -33,10 +33,10 @@ data("Jena_hierarchical_mat")
 single_plot <- do.call(rbind, Jena_plot_biomass_data)
 output_single_plot_div <- Stay_Single(data = single_plot, order.q = c(1,2), Alltime = TRUE)
 output_single_plot_div <- data.frame(output_single_plot_div,
-                                     log2_sowndiv = log2(as.numeric(do.call(rbind,
-                                       strsplit(output_single_plot_div[,1],"[._]+"))[,2])),
+                                     log2_sowndiv = log2(as.numeric(do.call(rbind, 
+                                     strsplit(output_single_plot_div[,1],"[._]+"))[,2])),
                                      block = do.call(rbind,
-                                       strsplit(output_single_plot_div[,1],"[._]+"))[,1])
+                                     strsplit(output_single_plot_div[,1],"[._]+"))[,1])
 
 ggStay_analysis(output=output_single_plot_div, x_variable="log2_sowndiv",
                     by_group = "block", model = "LMM")
@@ -48,7 +48,8 @@ output_single_species_div <- Stay_Single(data = single_species,
 output_single_species_div <- data.frame(output_single_species_div,
                               log2_sowndiv = log2(as.numeric(do.call(rbind, 
                               strsplit(output_single_species_div[,1],"[._]+"))[,3])),
-                              block=do.call(rbind, strsplit(output_single_species_div[,1],"[._]+"))[,2])
+                              block=do.call(rbind, 
+                              strsplit(output_single_species_div[,1],"[._]+"))[,2])
 
 ggStay_analysis(output = output_single_species_div, x_variable = "log2_sowndiv",
                 by_group = "block", model = "LMM")
@@ -61,7 +62,8 @@ output_multi_plot_div <- Stay_Multiple(data = multiple_plot, order.q = c(1,2), A
 output_multi_plot_div <- data.frame(output_multi_plot_div,
                                log2_sowndiv = log2(as.numeric(do.call(rbind, 
                                strsplit(output_multi_plot_div[, 1], "_"))[, 2])),
-                               block = do.call(rbind, strsplit(output_multi_plot_div[, 1], "_"))[, 1])
+                               block = do.call(rbind, 
+                               strsplit(output_multi_plot_div[, 1], "_"))[, 1])
 
 ggStay_analysis(output = output_multi_plot_div, x_variable= "log2_sowndiv",
                 by_group = "block", model = "LMM")
