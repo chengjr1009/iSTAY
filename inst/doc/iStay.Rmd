@@ -474,10 +474,10 @@ hierplot[[2]]
 ## References
 
 Roscher C. Schumacher, J., Baade, J. et al. (2004)
-The role of biodiversity for element cycling and trophic interactions: an experimental approach in a grassland community Basic and Applied Ecology, 5, 107-121. https://doi.org/10.1078/1439-1791-00216
-
-Weisser, W. W., Roscher, C., Meyer, S. T., et al. (2017) Biodiversity effects on ecosystem functioning in a 15-year grassland experiment: Patterns, mechanisms, and open questions. Basic and Applied Ecology, 23, 1-73. https://doi.org/10.1016/j.baae.2017.06.002
-
+The role of biodiversity for element cycling and trophic interactions: an experimental approach in a grassland community Basic and Applied Ecology, 5, 107-121.
+https://doi.org/10.1078/1439-1791-00216
+Weisser, W. W., Roscher, C., Meyer, S. T., et al. (2017) Biodiversity effects on ecosystem functioning in a 15-year grassland experiment: Patterns, mechanisms, and open questions. Basic and Applied Ecology, 23, 1-73.
+https://doi.org/10.1016/j.baae.2017.06.002
 Wagg, C., Roscher, C., Weigelt, A. et al. (2022) Biodiversity–stability relationships strengthen over time in a long-term grassland experiment. Nature Communications 13, 7752. https://doi.org/10.1038/s41467-022-35189-2
 
 
