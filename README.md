@@ -7,7 +7,7 @@ library(iStay)
 
 <font color=#FF6600> </font>
 
-`iStay` (Information-based measures of stability and related synchrony)
+`iStay` (information-based measures of stability and related synchrony)
 is an R package for featuring a class of measures of community/ecosystem
 stability and related synchrony; the corresponding diversity-stability
 is also assessed if biodiversity data are available. The
@@ -143,18 +143,18 @@ plots in the block. In each plot, the total biomass of all species is
 recorded each year from 2003 to 2024. And also recorded the biomass of
 each species each year from 2003 to 2024 except 2004.
 
-There are four data provided with the package: 22-years biomass of plots
-data (`Jena_plot_biomass_data`), 21-years biomass of species in each
-plot data (`Jena_species_biomass_data`), hierarchical biomass data
-(`Jena_hierarchical_biomass_data`), and hierarchical structure matrix
-data (`Jena_hierarchical_mat`).
+There are four datasets provided with the package: (1) 22-years biomass
+of plots data (`Jena_plot_biomass_data`), (2) 21-years biomass of
+species in each plot data (`Jena_species_biomass_data`), (3)
+hierarchical biomass data (`Jena_hierarchical_biomass_data`), (4) and
+hierarchical structure matrix data (`Jena_hierarchical_mat`).
 
-The first data (`Jena_plot_biomass_data`) is a list including 20 time
+The first dataset (`Jena_plot_biomass_data`) is a list including 20 time
 series biomass dataframes by considering all possible block-sowndiv
 combinations (4 blocks and 5 levels of sown diversity). Each dataframe
 includes the plots (as rows) corresponding to same block and number of
-sown plants, and 22-years biomass of total species (as columns) in each
-plot.
+sown plants, and 22-years total biomass of all species (as columns) in
+each plot.
 
 For this dataset, it mainly use for multiple communities analysis. And
 for single community analysis, we can just combines 20 time series
@@ -193,12 +193,12 @@ head(round(multiple_plot[[1]][,1:5],2), 10)
     #> B1A15  663  737 113.4  71.8 167.5
     #> B1A18  256  206   9.8  79.2  31.6
 
-First data is about the biomass of total species in each plot. And the
-second data (`Jena_species_biomass_data`) about the biomass of each
-species in each plot. It is a list including 76 time series biomass
-dataframes by considering all plots. Each dataframe includes the species
-(as rows) in the plot, and 21-years biomass of each species (as columns)
-in each plot.
+The first dataset contains the total biomass of all species in each
+plot. The second dataset (`Jena_species_biomass_data`) contains the
+biomass of each individual species in each plot. It is a list including
+76 time series biomass dataframes by considering all plots. Each
+dataframe includes the species (as rows) in the plot, and 21-years
+biomass of each species (as columns) in each plot.
 
 For this dataset, it mainly use for multiple communities analysis. And
 for single community analysis, we can just combines 76 time series
@@ -246,7 +246,7 @@ head(round(multiple_species[[1]][,1:5],2), 10)
 
 For hierarchical analysis, we also use the biomass of each species in
 every plot to construct hierarchical structure with four levels (Overall
-area, Block, Plot and Species). The second dataset
+area, Block, Plot and Species). The third dataset
 (`Jena_hierarchical_biomass_data`) is the biomass data for hierarchical
 analysis, including all species in each plot (as columns) and 21-years
 biomass (as rows) of each species (year 2004 is deducted because the
@@ -273,14 +273,14 @@ head(round(Jena_hierarchical_biomass_data[,1:5],2), 10)
 
 #### Structure matrix for hierarchies
 
-For `Jena_hierarchical_biomass_data` biomass dataset, there is a
-corresponding structure matrix, called `Jena_hierarchical_mat`. In this
-matrix, there are three columns for each hierarchical levels from high
-to low level (except overall area), which are “Block”, “Plot” and
-“Species”. And The rows in the matrix is corresponding to each row in
-biomass dataset, that is each row in matrix describing the category to
-which each row of biomass data belongs at each hierarchical level. Run
-the following code to view the first ten rows:
+For the `Jena_hierarchical_biomass_data` biomass dataset, there is a
+corresponding structure matrix called `Jena_hierarchical_mat`. This
+matrix contains three columns representing the hierarchical levels from
+highest to lowest (excluding the overall area): “Block”, “Plot”, and
+“Species”. Each row of `Jena_hierarchical_mat` corresponds to a row in
+the biomass dataset, indicating the category to which that biomass
+measurement belongs at each hierarchical level. Run the following code
+to view the first ten rows:
 
 ``` r
 data("Jena_hierarchical_mat")
@@ -307,10 +307,10 @@ to plot stability-profile. If combine the diversity information to
 output of `Stay_Single()`, can use `ggStay_analysis()` to plot the
 relationship between stability and diversity information. For
 stability-profile, following sets order q from 0.1 to 2.0 in increments
-of 0.1, and uses 22-years biomass of only two plots “B1A04” and “B4A14”
-to avoid too complicated graph; For diversity-stability relationship,
-following use the default setting of order q (q = 1 and q = 2) and use
-22-years biomass of all 76 plots.
+of 0.1, and uses 22-years biomass of only two plots “B1A04” and “B4A14”,
+to avoid an overly complicated graph. For diversity-stability
+relationship, following use the default setting of order q (q = 1 and q
+= 2) and use 22-years biomass of all 76 plots.
 
 Run the following code to view the first ten rows of the output:
 
@@ -386,12 +386,12 @@ group of multiple communities (plots) for the set order q. And
 `ggStay_qprofile()` provides to plot stability-profile. If combine the
 diversity information to output of `Stay_Single()`, can use
 `ggStay_analysis()` to plot the relationship between stability and
-diversity information. For stability-profile, following sets order q
+diversity information. For stability-profile, following sets the order q
 from 0.1 to 2.0 in increments of 0.1, and uses 22-years biomass of only
-two groups of multiple communities (plots) “B1_1” and “B3_2” to avoid
-too complicated graph; For diversity-stability relationship, following
-use the default setting of order q (q = 1 and q = 2) and use 22-years
-biomass of all 20 groups of multiple communities (plots).
+two groups of multiple communities (plots) “B1_1” and “B3_2”, to avoid
+an overly complicated graph. For diversity-stability relationship,
+following use the default setting of order q (q = 1 and q = 2) and use
+22-years biomass of all 20 groups of multiple communities (plots).
 
 Run the following code to view the first ten rows of the output:
 
@@ -403,8 +403,8 @@ head(output_multi_q, 10)
 ```
 
     #>    Site Order_q Gamma Alpha   Beta Synchrony
-    #> 1  B1_1     0.1 0.978 0.908 0.0702     0.886
-    #> 2  B3_2     0.1 0.965 0.935 0.0301     0.961
+    #> 1  B1_1     0.1 0.978 0.907 0.0714     0.886
+    #> 2  B3_2     0.1 0.965 0.934 0.0305     0.961
     #> 3  B1_1     0.2 0.957 0.873 0.0833     0.861
     #> 4  B3_2     0.2 0.932 0.894 0.0384     0.951
     #> 5  B1_1     0.3 0.935 0.842 0.0930     0.839
@@ -488,8 +488,8 @@ head(output_single_species_q, 10)
 ```
 
     #>            Plot/Community Order_q Stability
-    #> 1  B1A06_B1_16.BM_Ant.odo     0.1     0.426
-    #> 2  B1A06_B1_16.BM_Cam.pat     0.1     0.344
+    #> 1  B1A06_B1_16.BM_Ant.odo     0.1     0.408
+    #> 2  B1A06_B1_16.BM_Cam.pat     0.1     0.322
     #> 3  B1A06_B1_16.BM_Ant.odo     0.2     0.370
     #> 4  B1A06_B1_16.BM_Cam.pat     0.2     0.299
     #> 5  B1A06_B1_16.BM_Ant.odo     0.3     0.336
@@ -527,16 +527,16 @@ head(output_single_species_div, 10)
 ```
 
     #>            Plot.Community Order_q Stability log2_sowndiv block
-    #> 1  B1A01_B1_16.BM_Aju.rep       1  1.39e-01            4    B1
-    #> 2  B1A01_B1_16.BM_Ant.odo       1  2.83e-01            4    B1
-    #> 3  B1A01_B1_16.BM_Ant.syl       1  1.27e-12            4    B1
-    #> 4  B1A01_B1_16.BM_Ave.pub       1  6.41e-01            4    B1
-    #> 5  B1A01_B1_16.BM_Bro.hor       1  2.16e-01            4    B1
-    #> 6  B1A01_B1_16.BM_Car.car       1  1.02e-01            4    B1
-    #> 7  B1A01_B1_16.BM_Ger.pra       1  6.34e-01            4    B1
-    #> 8  B1A01_B1_16.BM_Lat.pra       1  5.51e-01            4    B1
-    #> 9  B1A01_B1_16.BM_Lot.cor       1  4.65e-01            4    B1
-    #> 10 B1A01_B1_16.BM_Pla.lan       1  5.20e-01            4    B1
+    #> 1  B1A01_B1_16.BM_Aju.rep       1     0.139            4    B1
+    #> 2  B1A01_B1_16.BM_Ant.odo       1     0.283            4    B1
+    #> 3  B1A01_B1_16.BM_Ant.syl       1     0.000            4    B1
+    #> 4  B1A01_B1_16.BM_Ave.pub       1     0.641            4    B1
+    #> 5  B1A01_B1_16.BM_Bro.hor       1     0.216            4    B1
+    #> 6  B1A01_B1_16.BM_Car.car       1     0.102            4    B1
+    #> 7  B1A01_B1_16.BM_Ger.pra       1     0.634            4    B1
+    #> 8  B1A01_B1_16.BM_Lat.pra       1     0.551            4    B1
+    #> 9  B1A01_B1_16.BM_Lot.cor       1     0.465            4    B1
+    #> 10 B1A01_B1_16.BM_Pla.lan       1     0.520            4    B1
 
 ``` r
 ggStay_analysis(output=output_single_species_div, x_variable="log2_sowndiv",
@@ -569,10 +569,10 @@ head(output_multi_species_q, 10)
 ```
 
     #>          Site Order_q Gamma Alpha    Beta Synchrony
-    #> 1  B1A04_B1_4     0.1 0.979 0.796 0.18256     0.706
-    #> 2  B4A14_B4_2     0.1 0.966 0.958 0.00783     0.982
-    #> 3  B1A04_B1_4     0.2 0.958 0.738 0.21973     0.649
-    #> 4  B4A14_B4_2     0.2 0.936 0.924 0.01184     0.969
+    #> 1  B1A04_B1_4     0.1 0.979 0.793 0.18541     0.706
+    #> 2  B4A14_B4_2     0.1 0.966 0.958 0.00793     0.982
+    #> 3  B1A04_B1_4     0.2 0.958 0.738 0.21979     0.649
+    #> 4  B4A14_B4_2     0.2 0.936 0.924 0.01185     0.969
     #> 5  B1A04_B1_4     0.3 0.937 0.693 0.24433     0.607
     #> 6  B4A14_B4_2     0.3 0.909 0.894 0.01517     0.956
     #> 7  B1A04_B1_4     0.4 0.917 0.655 0.26148     0.578
@@ -631,7 +631,7 @@ ggStay_analysis(output=output_multi_species_div, x_variable="log2_sowndiv",
 Based on biomass data and structure matrix, `Stay_Hier()` computes
 stability of each hierarchical level for the set order q. And
 `ggStay_qprofile()` provides to plot stability-profile. Following sets
-order q from 0.1 to 2.0 in increments of 0.1, and uses 16-years biomass
+order q from 0.1 to 2.0 in increments of 0.1, and uses 21-years biomass
 data.
 
 Run the following code to view the first ten rows of the output:
@@ -679,7 +679,14 @@ hierplot[[2]]
 
 ## References
 
-Wagg, C., Roscher, C., Weigelt, A. et al. (2022) Biodiversity–stability
-relationships strengthen over time in a long-term grassland experiment.
-Nature Communications 13, 7752.
-<https://doi.org/10.1038/s41467-022-35189-2>
+Roscher C. Schumacher, J., Baade, J. et al. (2004) The role of
+biodiversity for element cycling and trophic interactions: an
+experimental approach in a grassland community Basic and Applied
+Ecology, 5, 107-121. <https://doi.org/10.1078/1439-1791-00216> Weisser,
+W. W., Roscher, C., Meyer, S. T., et al. (2017) Biodiversity effects on
+ecosystem functioning in a 15-year grassland experiment: Patterns,
+mechanisms, and open questions. Basic and Applied Ecology, 23, 1-73.
+<https://doi.org/10.1016/j.baae.2017.06.002> Wagg, C., Roscher, C.,
+Weigelt, A. et al. (2022) Biodiversity–stability relationships
+strengthen over time in a long-term grassland experiment. Nature
+Communications 13, 7752. <https://doi.org/10.1038/s41467-022-35189-2>
