@@ -150,7 +150,7 @@ Stay_Multiple <- function (data, order.q = c(1, 2), Alltime = TRUE, start_T = NU
     if (q == 1) {
       p_i_new <- p_i
       p_pool_new <- p_pool
-      alpha <- (exp(-sum((ZZ[ZZ > 0] / z_plusplus) * log(ZZ[ZZ > 0] / z_iplus))) - 1) / (K - 1)
+      alpha <- (exp(-sum(ZZ[ZZ > 0] / z_plusplus * log(p_i_new[p_i_new > 0]))) - 1) / (K - 1)
       gamma <- (exp(-sum(p_pool[p_pool > 0] * log(p_pool_new[p_pool_new > 0]))) - 1) / (K - 1)
     } else {
       alpha <- (sum(z_iplus / z_plusplus * (ZZ / z_iplus)^q)^(1 / (1-q)) - 1) / (K - 1)
