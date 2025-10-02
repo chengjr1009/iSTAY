@@ -5,9 +5,9 @@ utils::globalVariables(c(
   "type", "value", "x_max", "x_min"
 ))
 
-#' Calculate stability of the time series data for single assemblage.
+#' Calculate stability of time-series data for a single assemblage.
 #'
-#' \code{Stay_Single} is a function that calculate stability of the time series data (like biomass, productivity, etc.) for single assemblage.
+#' \code{Stay_Single} is a function that computes the stability of time-series data (e.g., biomass, productivity) for a single assemblage.
 #'
 #' @param data can be input as a \code{vector} of time series data, or \code{data.frame} (assemblages by times).
 #' @param order.q a numerical vector specifying the orders of stability. Default is c(1,2).
@@ -88,9 +88,9 @@ Stay_Single <- function (data, order.q = c(1, 2), Alltime = TRUE, start_T = NULL
 
 
 
-#' Calculate stability and synchrony of the time series data for multiple assemblages.
+#' Calculate stability and synchrony of time-series data for multiple assemblages.
 #'
-#' \code{Stay_Multiple} is a function that calculate (Gamma, Alpha and Beta) stability and synchrony of the time series data (like biomass, productivity, etc.) for multiple assemblages.
+#' \code{Stay_Multiple} is a function that computes gamma, alpha, and beta stability, as well as synchrony, for time-series data (e.g., biomass, productivity) across multiple assemblages.
 #'
 #' @param data can be input as a \code{data.frame/matrix} (assemblages by times), or a \code{list} of \code{data.frames} with each dataframe representing a assemblages-by-times data.
 #' @param order.q a numerical vector specifying the orders of stability and synchrony. Default is c(1,2).
@@ -244,9 +244,9 @@ Stay_Multiple <- function (data, order.q = c(1, 2), Alltime = TRUE, start_T = NU
   return(result)
 }
 
-#' Calculate stability of the time series data for hierarchical structure.
+#' Calculate stability of time-series data for hierarchical structure.
 #'
-#' \code{Stay_Hier} is a function that calculate stability of the time series data (like biomass, productivity, etc.) for hierarchical structure.
+#' \code{Stay_Hier} is a function that computes gamma, alpha, and normalized beta stability for time-series data (e.g., biomass, productivity) within hierarchical structures.
 #'
 #' @param data can be input as \code{data.frame} (assemblages by times).
 #' @param mat hierarchical structure of data.

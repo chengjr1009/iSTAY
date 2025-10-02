@@ -13,6 +13,7 @@ Authors@R:
            "Shia", 
            role = "ctb",
            email = "johnny70426@gmail.com")
+  )
 Description: Provides functions to (i) compute order-q stability for a single assemblage, (ii) compute order-q stability and synchrony for multiple assemblages, and (iii) assess stability in hierarchical data. Additional utilities are included to visualize stability or synchrony profiles, and to analyze and plot relationships between stability (or synchrony) and diversity or other explanatory variables.
 License: GPL (>= 3)
 Imports: ggplot2,
