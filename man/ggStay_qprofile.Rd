@@ -26,13 +26,13 @@ data("Jena_hierarchical_mat")
 ## Single assemblage
 # Stability of each single plot
 single_plot <- do.call(rbind, Jena_plot_biomass_data)
-output_single_plot_q <- Stay_Single(data=single_plot[c(12,65),],
+output_single_plot_q <- Stay_Single(data=single_plot[c(12,38),],
                                     order.q=seq(0.1,2,0.1), Alltime=TRUE)
 ggStay_qprofile(output=output_single_plot_q)
 
 # Stability of each single species
 single_species <- do.call(rbind, Jena_species_biomass_data)
-output_single_species_q <- Stay_Single(data=single_species[c(41,45),],
+output_single_species_q <- Stay_Single(data=single_species[c(40,49),],
                                        order.q=seq(0.1,2,0.1), Alltime=TRUE)
 ggStay_qprofile(output=output_single_species_q)
 
@@ -40,13 +40,13 @@ ggStay_qprofile(output=output_single_species_q)
 ## Multiple assemblages
 # Stability of multiple plots
 multiple_plot <- Jena_plot_biomass_data
-output_multi_plot_q <- Stay_Multiple(data=multiple_plot[c(1,13)],
+output_multi_plot_q <- Stay_Multiple(data=multiple_plot[c(9,11)],
                                          order.q=seq(0.1,2,0.1), Alltime=TRUE)
 ggStay_qprofile(output=output_multi_plot_q)
 
 # Stability of multiple species in plot
 multiple_species <- Jena_species_biomass_data
-output_multi_species_q <- Stay_Multiple(data=multiple_species[c(4,69)],
+output_multi_species_q <- Stay_Multiple(data=multiple_species[c(62,70)],
                                             order.q=seq(0.1,2,0.1), Alltime=TRUE)
 ggStay_qprofile(output=output_multi_species_q)
 

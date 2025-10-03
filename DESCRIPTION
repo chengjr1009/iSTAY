@@ -1,7 +1,8 @@
 Package: iStay
 Type: Package
 Title: Measuring ecological stability and synchrony
-Version: 0.1.1
+Version: 1.0.0
+Date: 2025-10-03
 Author: Anne Chao [aut, cre]
 Maintainer: Anne Chao <chao@stat.nthu.edu.tw>
 Authors@R:
@@ -9,24 +10,34 @@ Authors@R:
            "Chao",
            role = c("aut", "cre"),
            email = "Chao@stat.nthu.edu.tw"),
+    person("Yu-ting", 
+           "Huang", 
+           role = "aut",
+           email = "hamy0606s@gmail.com"),
     person("Johnny", 
            "Shia", 
-           role = "ctb",
+           role = "aut",
            email = "johnny70426@gmail.com")
   )
-Description: Provides functions to (i) compute order-q stability for a single assemblage, (ii) compute order-q stability and synchrony for multiple assemblages, and (iii) assess stability in hierarchical data. Additional utilities are included to visualize stability or synchrony profiles, and to analyze and plot relationships between stability (or synchrony) and diversity or other explanatory variables.
+Description: Provides functions to (i) compute order-q stability for a single assemblage, 
+          (ii) compute order-q stability and synchrony for multiple assemblages, and 
+          (iii) assess stability in hierarchical data. Additional utilities are included 
+          to visualize stability or synchrony profiles, and to analyze and plot relationships 
+          between stability (or synchrony) and diversity or other explanatory variables.
+           See Chao et al. (2025) <doi:https://doi.org/10.1101/2025.08.20.671203> for more details.
 License: GPL (>= 3)
-Imports: ggplot2,
+Imports: ggplot2 (>= 3.5.0),
          stringr,
          lmerTest,
+         lme4,
          dplyr,
          ggpubr
 Encoding: UTF-8
 LazyData: true
 Depends: 
-    R (>= 2.10)
+    R (>= 4.0.0)
 Suggests: 
     knitr,
     rmarkdown
 VignetteBuilder: knitr
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1

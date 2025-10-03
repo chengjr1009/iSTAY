@@ -2,7 +2,7 @@
 % Please edit documentation in R/Main_Function.R
 \name{Stay_Hier}
 \alias{Stay_Hier}
-\title{Calculate stability of the time series data for hierarchical structure.}
+\title{Calculate stability of time-series data for hierarchical structure.}
 \usage{
 Stay_Hier(
   data,
@@ -30,7 +30,7 @@ Stay_Hier(
 a dataframe with columns "Hier", "Order_q", and stability "Gamma", "Alpha", "Beta" and "Synchrony".
 }
 \description{
-\code{Stay_Hier} is a function that calculate stability of the time series data (like biomass, productivity, etc.) for hierarchical structure.
+\code{Stay_Hier} is a function that computes gamma, alpha, and normalized beta stability for time-series data (e.g., biomass, productivity) within hierarchical structures.
 }
 \examples{
 

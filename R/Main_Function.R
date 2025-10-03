@@ -514,276 +514,200 @@ Stay_Hier <- function (data, mat, order.q = c(1, 2), Alltime = TRUE, start_T = N
 #' @export
 
 ggStay_qprofile <- function(output){
-
-  if(length(which(colnames(output)=="Stability"))!=0){
-    if(length(which(colnames(output)=="Plot/Community"))==0 | length(which(colnames(output)=="Order_q"))==0){
+  
+  # local helper: safe color generator (no extra deps)
+  ggplotColors <- function(n) {
+    grDevices::hcl(h = seq(15, 375, length.out = n + 1), l = 65, c = 100)[1:n]
+  }
+  
+  if (length(which(colnames(output) == "Stability")) != 0) {
+    if (length(which(colnames(output) == "Plot/Community")) == 0 ||
+        length(which(colnames(output) == "Order_q")) == 0) {
       stop('Please put the complete output of "Stay_Single", "Stay_Multiple" or "Stay_Hier" function.')
-    }else{
+    } else {
       outtype <- "single"
     }
-  }else if(length(which(colnames(output)=="Hier"))!=0){
-    if(length(which(colnames(output)=="Order_q"))==0 | length(which(colnames(output)=="Gamma"))==0 | length(which(colnames(output)=="Alpha"))==0
-       | length(which(colnames(output)=="Beta"))==0 | length(which(colnames(output)=="Synchrony"))==0){
+  } else if (length(which(colnames(output) == "Hier")) != 0) {
+    if (length(which(colnames(output) == "Order_q")) == 0 ||
+        length(which(colnames(output) == "Gamma")) == 0 ||
+        length(which(colnames(output) == "Alpha")) == 0 ||
+        length(which(colnames(output) == "Beta")) == 0 ||
+        length(which(colnames(output) == "Synchrony")) == 0) {
       stop('Please put the complete output of "Stay_Single", "Stay_Multiple" or "Stay_Hier" function.')
-    }else{
+    } else {
       outtype <- "hier"
     }
-  }else{
-    if(length(which(colnames(output)=="Site"))==0 | length(which(colnames(output)=="Order_q"))==0 | length(which(colnames(output)=="Gamma"))== 0
-       | length(which(colnames(output)=="Alpha"))==0 | length(which(colnames(output)=="Beta"))==0
-       | length(which(colnames(output)=="Synchrony"))==0){
+  } else {
+    if (length(which(colnames(output) == "Site")) == 0 ||
+        length(which(colnames(output) == "Order_q")) == 0 ||
+        length(which(colnames(output) == "Gamma")) == 0 ||
+        length(which(colnames(output) == "Alpha")) == 0 ||
+        length(which(colnames(output) == "Beta")) == 0 ||
+        length(which(colnames(output) == "Synchrony")) == 0) {
       stop('Please put the complete output of "Stay_Single", "Stay_Multiple" or "Stay_Hier" function.')
-    }else{
+    } else {
       outtype <- "multiple"
     }
   }
-
-
-  if(outtype=="single"){
-
-    # Check if the number of unique 'Assemblage' is 4 or less
-    if (length(unique(output$`Plot/Community`)) <= 4){
+  
+  if (outtype == "single") {
+    
+    if (length(unique(output$`Plot/Community`)) <= 4) {
       cbPalette <- c("#EA0000","#0066CC","#64A600","#fb8500")
-    }else{
-      # If there are more than 4 assemblages, start with the same predefined color palette
-      # Then extend the palette by generating additional colors using the 'ggplotColors' function
+    } else {
       cbPalette <- c(c("#EA0000","#0066CC","#64A600","#fb8500"),
-                     ggplotColors(length(unique(output$`Plot/Community`))-4))
+                     ggplotColors(length(unique(output$`Plot/Community`)) - 4))
     }
-
-    output$`Plot/Community` <- factor(output$`Plot/Community`, levels=unique(output$`Plot/Community`))
-
-    plotout <- ggplot(data=output, aes(x=Order_q, y=Stability, color=`Plot/Community`))+
-      geom_line(linewidth=1.2)+
-      ylab(label="Stability")+
-      xlab(label="Order of q")+
-      labs(color="Plot/Community")+ theme_bw()+
-      scale_colour_manual(values = cbPalette) +
-      theme(legend.title = element_text(size=13), legend.text = element_text(size=12),
-            legend.key.size = unit(0.8, 'cm'), axis.title = element_text(size=16))
-
-
-  }else if(outtype=="hier"){
-    maxhier <- max(output$Hier)
+    
+    output$`Plot/Community` <- factor(output$`Plot/Community`,
+                                      levels = unique(output$`Plot/Community`))
+    
+    plotout <- ggplot2::ggplot(
+      data = output,
+      mapping = ggplot2::aes(x = Order_q, y = Stability, color = `Plot/Community`)
+    ) +
+      ggplot2::geom_line(linewidth = 1.2) +
+      ggplot2::ylab("Stability") +
+      ggplot2::xlab("Order of q") +
+      ggplot2::labs(color = "Plot/Community") +
+      ggplot2::theme_bw() +
+      ggplot2::scale_colour_manual(values = cbPalette) +
+      ggplot2::theme(
+        legend.title = ggplot2::element_text(size = 13),
+        legend.text  = ggplot2::element_text(size = 12),
+        legend.key.size = grid::unit(0.8, "cm"),
+        axis.title   = ggplot2::element_text(size = 16)
+      )
+    
+  } else if (outtype == "hier") {
+    
+    maxhier  <- max(output$Hier)
     hier_num <- unique(output$Hier)
-    qq <- unique(output$Order_q)
-    type_name <- c(paste("Gamma(",maxhier,")",sep=""),paste("Alpha","(",hier_num[-1],")", sep=""))
-    type_name2_2 <- c(paste("Beta","(",hier_num[-1],")", sep=""), "Alpha(1)")
-    type_diff <- paste("Hier",hier_num[-1], sep="")
-
-    plotdat1 <- data.frame(Order_q = rep(qq, length(hier_num)),
-                           Stability = c(filter(output, Hier==maxhier)$Gamma, filter(output, Hier!=maxhier)$Alpha),
-                           type = rep(type_name, each=length(qq)))
-    plotdat1$type <- factor(plotdat1$type, levels=type_name)
-
-    plotdat2 <- data.frame(Order_q = rep(qq, (length(hier_num)-1)),
-                           Synchrony = filter(output, Hier!=maxhier)$Synchrony,
-                           type = rep(type_diff, each=length(qq)))
-    plotdat2$type <- factor(plotdat2$type, levels=type_diff)
-
-    plotdat2_2 <- data.frame(Order_q = rep(qq, length(hier_num)),
-                             Stability = c(filter(output, Hier!=maxhier)$Beta, filter(output, Hier==1)$Alpha),
-                             type = rep(type_name2_2, each=length(qq)))
-    plotdat2_2$type <- factor(plotdat2_2$type, levels=type_name2_2)
-
-
-    # Check if the number of unique 'Assemblage' is 4 or less
-    if (length(unique(plotdat1$type)) <= 4){
+    qq       <- unique(output$Order_q)
+    type_name   <- c(paste0("Gamma(", maxhier, ")"),
+                     paste0("Alpha(", hier_num[-1], ")"))
+    type_name2_2 <- c(paste0("Beta(", hier_num[-1], ")"), "Alpha(1)")
+    type_diff    <- paste0("Hier", hier_num[-1])
+    
+    plotdat1 <- data.frame(
+      Order_q  = rep(qq, length(hier_num)),
+      Stability = c(dplyr::filter(output, Hier == maxhier)$Gamma,
+                    dplyr::filter(output, Hier != maxhier)$Alpha),
+      type = rep(type_name, each = length(qq))
+    )
+    plotdat1$type <- factor(plotdat1$type, levels = type_name)
+    
+    plotdat2 <- data.frame(
+      Order_q  = rep(qq, (length(hier_num) - 1)),
+      Synchrony = dplyr::filter(output, Hier != maxhier)$Synchrony,
+      type = rep(type_diff, each = length(qq))
+    )
+    plotdat2$type <- factor(plotdat2$type, levels = type_diff)
+    
+    plotdat2_2 <- data.frame(
+      Order_q  = rep(qq, length(hier_num)),
+      Stability = c(dplyr::filter(output, Hier != maxhier)$Beta,
+                    dplyr::filter(output, Hier == 1)$Alpha),
+      type = rep(type_name2_2, each = length(qq))
+    )
+    plotdat2_2$type <- factor(plotdat2_2$type, levels = type_name2_2)
+    
+    if (length(unique(plotdat1$type)) <= 4) {
       cbPalette <- c("#EA0000","#0066CC","#64A600","#fb8500")
-    }else{
+    } else {
       cbPalette <- c(c("#EA0000","#0066CC","#64A600","#fb8500"),
-                     ggplotColors(length(unique(plotdat1$type))-4))
+                     ggplotColors(length(unique(plotdat1$type)) - 4))
     }
-
-    if (length(unique(plotdat2$type)) <= 4){
+    
+    if (length(unique(plotdat2$type)) <= 4) {
       cbPalette_2 <- c("#EA0000","#0066CC","#64A600","#fb8500")
-    }else{
+    } else {
       cbPalette_2 <- c(c("#EA0000","#0066CC","#64A600","#fb8500"),
-                     ggplotColors(length(unique(plotdat2$type))-4))
+                       ggplotColors(length(unique(plotdat2$type)) - 4))
     }
-
-    plotout1 <- ggplot(data=plotdat1, aes(x=Order_q, y=Stability, color=type))+
-                  geom_line(linewidth=1.2)+
-                  ylab("Hierarchical Stability")+
-                  labs(color="")+
-                  scale_colour_manual(values = cbPalette) +
-                  theme_bw()+
-                  theme(axis.text=element_text(size=10), axis.title=element_text(size=16),
-                        plot.margin = unit(c(1,1,1,1), "cm"),
-                        legend.key.size = unit(0.8, 'cm'),
-                        legend.text = element_text(size=12))
-
-    plotout2 <- ggplot(data=plotdat2, aes(x=Order_q, y=Synchrony, color=type))+
-                  geom_line(linewidth=1.2)+
-                  ylab(label=expression(paste("Hierarchical Synchrony")))+
-                  labs(color="Hierarchical level")+
-                  scale_colour_manual(values = cbPalette_2) +
-                  theme_bw()+
-                  theme(axis.text=element_text(size=10), axis.title=element_text(size=16),
-                        plot.margin = unit(c(1,1,1,1), "cm"),
-                        legend.key.size = unit(0.8, 'cm'),
-                        legend.text = element_text(size=12))
-
-    plotout2_2 <- ggplot(data=plotdat2_2, aes(x=Order_q, y=Stability, color=type))+
-                    geom_line(linewidth=1.2)+
-                    ylab(label=expression(paste("Hierarchical Stability")))+
-                    labs(color="")+
-                    scale_colour_manual(values = cbPalette) +
-                    theme_bw()+
-                    theme(axis.text=element_text(size=10), axis.title=element_text(size=16),
-                          plot.margin = unit(c(1,1,1,1), "cm"),
-                          legend.key.size = unit(0.8, 'cm'),
-                          legend.text = element_text(size=12))
-
-    # if legend in the bottom can use
-    # if(length(type_diff)>=4){
-    #   plotout2 <- plotout2 + guides(color=guide_legend(nrow=2,byrow=TRUE))
-    # }
-
-
-    # if(sum(output$Order_q==1)!=0 | sum(output$Order_q==2)!=0){
-    #   output_q1 <- filter(output, Order_q==1)
-    #   output_q1 <- output_q1[order(output_q1$Hier,decreasing=TRUE),]
-    #   output_q2 <- filter(output, Order_q==2)
-    #   output_q2 <- output_q2[order(output_q2$Hier,decreasing=TRUE),]
-    #
-    #   label_names <- c(paste("Beta(",(output_q1$Hier-1)[-length(output_q1$Hier)],")", sep=""), "Alpha(1)")
-    #   if(nrow(output_q1)==0){
-    #     q_stab_q1 <- c()
-    #   }else{
-    #     q_stab_q1 <- data.frame(Hier=label_names,
-    #                             Order_q=rep(1,length(output_q1$Hier)),
-    #                             beta_alpha=c((output_q1$Gamma-output_q1$Alpha)[2:length(output_q1$Hier)], output_q1$Alpha[length(output_q1$Hier)]))
-    #   }
-    #
-    #   if(nrow(output_q2)==0){
-    #     q_stab_q2 <- c()
-    #   }else{
-    #     q_stab_q2 <- data.frame(Hier=label_names,
-    #                             Order_q=rep(2,length(output_q2$Hier)),
-    #                             beta_alpha=c((output_q2$Gamma-output_q2$Alpha)[2:length(output_q2$Hier)], output_q2$Alpha[length(output_q2$Hier)]))
-    #   }
-    #
-    #   q_stab_q1$percent <- ((q_stab_q1$beta_alpha)/sum(q_stab_q1$beta_alpha))*100
-    #   q_stab_q2$percent <- ((q_stab_q2$beta_alpha)/sum(q_stab_q2$beta_alpha))*100
-    #
-    #   plotdat_q12 <- rbind(q_stab_q1, q_stab_q2)
-    #   plotdat_q12$Hier <- factor(plotdat_q12$Hier, levels=label_names)
-    #   plotdat_q12$Order_q <- as.factor(plotdat_q12$Order_q)
-    #
-    #   # Check if the number of unique 'Assemblage' is 4 or less
-    #   if (length(unique(plotdat_q12$Hier)) <= 4){
-    #     cbPalette2 <- c("#EA0000","#0066CC","#73BF00","#FFAF60")
-    #   }else{
-    #     # If there are more than 4 assemblages, start with the same predefined color palette
-    #     # Then extend the palette by generating additional colors using the 'ggplotColors' function
-    #     cbPalette2 <- c(c("#EA0000","#0066CC","#73BF00","#FFAF60"),
-    #                    ggplotColors(length(unique(plotdat_q12$Hier))-4))
-    #   }
-    #
-    #   plotout3 <- ggplot(data=plotdat_q12, aes(x=Order_q, y=percent, fill=Hier))+
-    #     geom_bar(stat="identity", width = 0.5)+
-    #     ylab(label="Stability (% of total)")+
-    #     labs(fill = "Hierarchical level")+theme_bw()+
-    #     scale_fill_manual(values = cbPalette2) +
-    #     theme(axis.text=element_text(size=10), axis.title=element_text(size=13))
-    #
-    #
-    #   label_names2 <- paste("Hier_",(output_q1$Hier-1)[-length(output_q1$Hier)], sep="")
-    #   if(nrow(output_q1)==0){
-    #     q_stab_q1_2 <- c()
-    #   }else{
-    #     q_stab_q1_2 <- data.frame(Hier=label_names2, Order_q=rep(1,length(output_q1$Hier)-1),
-    #                               beta_alpha=c(output_q1$Synchrony[2:length(output_q1$Hier)]))
-    #   }
-    #
-    #   if(nrow(output_q2)==0){
-    #     q_stab_q2_2 <- c()
-    #   }else{
-    #     q_stab_q2_2 <- data.frame(Hier=label_names2, Order_q=rep(2,length(output_q2$Hier)-1),
-    #                               beta_alpha=c(output_q2$Synchrony[2:length(output_q2$Hier)]))
-    #   }
-    #   q_stab_q1_2[,4] <- q_stab_q1_2[,3]/sum(q_stab_q1_2[,3])
-    #   q_stab_q2_2[,4] <- q_stab_q2_2[,3]/sum(q_stab_q2_2[,3])
-    #
-    #   plotdat_q12_2 <- rbind(q_stab_q1_2, q_stab_q2_2)
-    #   colnames(plotdat_q12_2)[c(3,4)] <- c("Synchrony","percent")
-    #   plotdat_q12_2$Hier <- factor(plotdat_q12_2$Hier, levels=label_names2)
-    #   plotdat_q12_2$Order_q <- as.factor(plotdat_q12_2$Order_q)
-    #
-    #   # Check if the number of unique 'Assemblage' is 4 or less
-    #   if (length(unique(plotdat_q12_2$Hier)) <= 4){
-    #     cbPalette3 <- c("#EA0000","#0066CC","#73BF00","#FFAF60")
-    #   }else{
-    #     # If there are more than 4 assemblages, start with the same predefined color palette
-    #     # Then extend the palette by generating additional colors using the 'ggplotColors' function
-    #     cbPalette3 <- c(c("#EA0000","#0066CC","#73BF00","#FFAF60"),
-    #                     ggplotColors(length(unique(plotdat_q12_2$Hier))-4))
-    #   }
-    #
-    #   plotout4 <- ggplot(data=plotdat_q12_2, aes(x=Order_q, y=percent, fill=Hier))+
-    #     geom_bar(stat="identity", width = 0.5)+
-    #     ylab(label="Synchrony (% of total)")+
-    #     labs(fill = "Hierarchical level")+theme_bw()+
-    #     scale_fill_manual(values = cbPalette3) +
-    #     theme(axis.text=element_text(size=10), axis.title=element_text(size=13))
-    # }
-
-    # if(sum(output$Order_q==1)!=0 | sum(output$Order_q==2)!=0){
-    #   plotout <- list()
-    #   # plotout[[1]] <- ggarrange(plotout1, plotout2, ncol = 2)
-    #   plotout[[1]] <- plotout1
-    #   plotout[[2]] <- ggarrange(plotout3, plotout4, ncol = 2)
-    # }else{
-    #   # plotout <- ggarrange(plotout1, plotout2, ncol = 2)
-    #   plotout <- list()
-    #   plotout[[1]] <- plotout1
-    # }
-
+    
+    plotout1 <- ggplot2::ggplot(plotdat1, ggplot2::aes(x = Order_q, y = Stability, color = type)) +
+      ggplot2::geom_line(linewidth = 1.2) +
+      ggplot2::ylab("Hierarchical Stability") +
+      ggplot2::labs(color = "") +
+      ggplot2::scale_colour_manual(values = cbPalette) +
+      ggplot2::theme_bw() +
+      ggplot2::theme(
+        axis.text  = ggplot2::element_text(size = 10),
+        axis.title = ggplot2::element_text(size = 16),
+        plot.margin = grid::unit(c(1,1,1,1), "cm"),
+        legend.key.size = grid::unit(0.8, "cm"),
+        legend.text = ggplot2::element_text(size = 12)
+      )
+    
+    plotout2 <- ggplot2::ggplot(plotdat2, ggplot2::aes(x = Order_q, y = Synchrony, color = type)) +
+      ggplot2::geom_line(linewidth = 1.2) +
+      ggplot2::ylab(expression(paste("Hierarchical Synchrony"))) +
+      ggplot2::labs(color = "Hierarchical level") +
+      ggplot2::scale_colour_manual(values = cbPalette_2) +
+      ggplot2::theme_bw() +
+      ggplot2::theme(
+        axis.text  = ggplot2::element_text(size = 10),
+        axis.title = ggplot2::element_text(size = 16),
+        plot.margin = grid::unit(c(1,1,1,1), "cm"),
+        legend.key.size = grid::unit(0.8, "cm"),
+        legend.text = ggplot2::element_text(size = 12)
+      )
+    
+    plotout2_2 <- ggplot2::ggplot(plotdat2_2, ggplot2::aes(x = Order_q, y = Stability, color = type)) +
+      ggplot2::geom_line(linewidth = 1.2) +
+      ggplot2::ylab(expression(paste("Hierarchical Stability"))) +
+      ggplot2::labs(color = "") +
+      ggplot2::scale_colour_manual(values = cbPalette) +
+      ggplot2::theme_bw() +
+      ggplot2::theme(
+        axis.text  = ggplot2::element_text(size = 10),
+        axis.title = ggplot2::element_text(size = 16),
+        plot.margin = grid::unit(c(1,1,1,1), "cm"),
+        legend.key.size = grid::unit(0.8, "cm"),
+        legend.text = ggplot2::element_text(size = 12)
+      )
+    
     plotout <- list()
     plotout[[1]] <- plotout1
-    plotout[[2]] <- ggarrange(plotout2_2, plotout2, ncol = 2)
-
-  }else{
-    output$Site <- factor(output$Site, levels=unique(output$Site))
-
-    # plotout <- list()
-    stab_plotdat <- data.frame(Site=rep(output$Site,4),
-                               Order_q=rep(output$Order_q,4),
-                               value=c(output$Gamma,output$Alpha,output$Beta,output$Synchrony),
-                               type=rep(c("Gamma","Alpha","Beta","Synchrony"),each=nrow(output)))
-    stab_plotdat$type <- factor(stab_plotdat$type, levels=c("Gamma","Alpha","Beta","Synchrony"))
-
-    # Check if the number of unique 'Assemblage' is 4 or less
-    if (length(unique(stab_plotdat$Site)) <= 4){
+    plotout[[2]] <- ggpubr::ggarrange(plotout2_2, plotout2, ncol = 2)
+    
+  } else {  # multiple
+    
+    output$Site <- factor(output$Site, levels = unique(output$Site))
+    
+    stab_plotdat <- data.frame(
+      Site    = rep(output$Site, 4),
+      Order_q = rep(output$Order_q, 4),
+      value   = c(output$Gamma, output$Alpha, output$Beta, output$Synchrony),
+      type    = rep(c("Gamma", "Alpha", "Beta", "Synchrony"), each = nrow(output))
+    )
+    stab_plotdat$type <- factor(stab_plotdat$type, levels = c("Gamma","Alpha","Beta","Synchrony"))
+    
+    if (length(unique(stab_plotdat$Site)) <= 4) {
       cbPalette <- c("#EA0000","#0066CC","#64A600","#fb8500")
-    }else{
-      # If there are more than 4 assemblages, start with the same predefined color palette
-      # Then extend the palette by generating additional colors using the 'ggplotColors' function
+    } else {
       cbPalette <- c(c("#EA0000","#0066CC","#64A600","#fb8500"),
-                      ggplotColors(length(unique(stab_plotdat$Site))-4))
+                     ggplotColors(length(unique(stab_plotdat$Site)) - 4))
     }
-
-    plotout <- ggplot(data=stab_plotdat, aes(x=Order_q, y=value, color=Site))+
-      geom_line(linewidth=1.2)+
-      facet_wrap(.~type, nrow=2, scales = "free")+
-      ylab(label="Stability and Synchrony")+
-      xlab(label="Order of q")+
-      labs(color="Site")+ theme_bw()+
-      scale_color_manual(values = cbPalette) +
-      theme(strip.text = element_text(size=13), legend.title = element_text(size=13),
-            legend.text = element_text(size=12), legend.key.size = unit(0.8, 'cm'),
-            axis.title = element_text(size=16))
-    #
-    #     plotout[[2]] <- ggplot(data=output, aes(x=Order_q, y=Synchrony, color=Site))+
-    #                       geom_line(linewidth=1.2)+
-    #                       ylab(label="Synchrony")+
-    #                       xlab(label="Order of q")+
-    #                       labs(color="Site")+ theme_bw()+
-    #                       theme(legend.title = element_text(size=13), legend.text = element_text(size=12),
-    #                             legend.key.size = unit(0.8, 'cm'), axis.title = element_text(size=16))
+    
+    plotout <- ggplot2::ggplot(stab_plotdat, ggplot2::aes(x = Order_q, y = value, color = Site)) +
+      ggplot2::geom_line(linewidth = 1.2) +
+      ggplot2::facet_wrap(~ type, nrow = 2, scales = "free") +
+      ggplot2::ylab("Stability and Synchrony") +
+      ggplot2::xlab("Order of q") +
+      ggplot2::labs(color = "Site") +
+      ggplot2::theme_bw() +
+      ggplot2::scale_color_manual(values = cbPalette) +
+      ggplot2::theme(
+        strip.text   = ggplot2::element_text(size = 13),
+        legend.title = ggplot2::element_text(size = 13),
+        legend.text  = ggplot2::element_text(size = 12),
+        legend.key.size = grid::unit(0.8, "cm"),
+        axis.title   = ggplot2::element_text(size = 16)
+      )
   }
-
+  
   return(plotout)
 }
 
@@ -799,10 +723,8 @@ ggStay_qprofile <- function(output){
 #' @param model specifying the fitting model, \code{model = "lm"} for linear model; \code{model = "LMM"} for linear mixed model with random effects for intercept and slope. Default is \code{model = "LMM"}.
 #'
 #'
-#' @import tidyverse
 #' @import stringr
 #' @import lme4
-#' @import lmerTest
 #' @import dplyr
 #'
 #'
@@ -867,560 +789,464 @@ ggStay_qprofile <- function(output){
 #'
 #' @export
 
-ggStay_analysis <- function(output, x_variable, by_group=NULL, model="LMM"){
-
-  # x_variable_ori <- x_variable
-  # if(is.null(by_group)==FALSE){by_group_ori <- by_group}
-
-  if(length(which(colnames(output)=="Stability"))!=0){
-    if((length(which(colnames(output)=="Plot/Community"))==0 & length(which(colnames(output)=="Plot.Community"))==0) | length(which(colnames(output)=="Order_q"))==0){
+ggStay_analysis <- function(output, x_variable, by_group = NULL, model = "LMM") {
+  
+  # local helper: safe color generator
+  ggplotColors <- function(n) {
+    grDevices::hcl(h = seq(15, 375, length.out = n + 1), l = 65, c = 100)[1:n]
+  }
+  
+  ## --- Basic checks ---------------------------------------------------------
+  if (length(which(colnames(output) == "Stability")) != 0) {
+    if ((length(which(colnames(output) == "Plot/Community")) == 0 &&
+         length(which(colnames(output) == "Plot.Community")) == 0) ||
+        length(which(colnames(output) == "Order_q")) == 0) {
       stop('Please put the complete output of "Stay_Single" or "Stay_Multiple" function.')
     }
-  }else{
-    if(length(which(colnames(output)=="Site"))==0 | length(which(colnames(output)=="Order_q"))==0 | length(which(colnames(output)=="Gamma"))==0
-       | length(which(colnames(output)=="Alpha"))==0 | length(which(colnames(output)=="Beta"))==0 
-       | length(which(colnames(output)=="Synchrony"))==0){
+  } else {
+    if (length(which(colnames(output) == "Site")) == 0 ||
+        length(which(colnames(output) == "Order_q")) == 0 ||
+        length(which(colnames(output) == "Gamma")) == 0 ||
+        length(which(colnames(output) == "Alpha")) == 0 ||
+        length(which(colnames(output) == "Beta")) == 0  ||
+        length(which(colnames(output) == "Synchrony")) == 0) {
       stop('Please put the complete output of "Stay_Single" or "Stay_Multiple" function.')
     }
   }
-  if(length(which(colnames(output)==x_variable))==0){
+  
+  if (length(which(colnames(output) == x_variable)) == 0) {
     stop('The output data need to combine a column setting as x_variable.')
-  }else{
-    colnames(output)[which(colnames(output)==x_variable)] <- c("Xvariable")
+  } else {
+    colnames(output)[which(colnames(output) == x_variable)] <- "Xvariable"
   }
-  if(is.null(by_group)==FALSE){
-    if(length(which(colnames(output)==by_group))==0){
+  
+  if (!is.null(by_group)) {
+    if (length(which(colnames(output) == by_group)) == 0) {
       stop('The output data need to combine a column setting as by_group.')
-    }else{
-      colnames(output)[which(colnames(output)==by_group)] <- c("Gvariable")
+    } else {
+      colnames(output)[which(colnames(output) == by_group)] <- "Gvariable"
     }
   }
-  if(model=="LMM"){
-    if(is.null(by_group)==TRUE){
-      stop('For linear mixed model, you need to set by_group variable as random effect.')
-    }
+  if (identical(model, "LMM") && is.null(by_group)) {
+    stop('For linear mixed model, you need to set by_group variable as random effect.')
   }
-
-  if(is.null(by_group)==FALSE){
-    output$Gvariable <- as.factor(output$Gvariable)
-  }
-
-  if(length(which(colnames(output)=="Stability"))!=0){
-
-    # fit model
-    lm_sign <-c()
+  
+  if (!is.null(by_group)) output$Gvariable <- as.factor(output$Gvariable)
+  
+  ## ========================================================================
+  ## A) Single 
+  ## ========================================================================
+  if (length(which(colnames(output) == "Stability")) != 0) {
+    
+    lm_sign  <- c()
     lm_slope <- c()
     plotdata <- c()
     part_fit <- c()
     plotdata_text_part <- c()
-    for(qq in unique(output$Order_q)){
-      subdata <- filter(output, Order_q==qq)
-      if(model=="lm"){
-        MODEL <- lm(Stability ~ Xvariable, subdata)
-        summary <- summary(MODEL)
-        sign <- summary$coefficients[2,4]
-        pred_value <- predict(MODEL, newdata=subdata)
-      }else{
-        MODEL <- lmer(Stability ~ 1 + Xvariable + (1 + Xvariable | Gvariable), subdata)
-        summary <- summary(MODEL)
-        sign <- summary$coefficients[2,5]
-        pred_value <- predict(MODEL, newdata=subdata, re.form=NA)
-
+    
+    for (qq in unique(output$Order_q)) {
+      subdata <- dplyr::filter(output, Order_q == qq)
+      
+      if (identical(model, "lm")) {
+        MODEL  <- stats::lm(Stability ~ Xvariable, subdata)
+        smry   <- summary(MODEL)
+        sign   <- smry$coefficients[2, 4]
+        pred_value <- stats::predict(MODEL, newdata = subdata)
+        
+      } else {
+        MODEL  <- lmerTest::lmer(Stability ~ 1 + Xvariable + (1 + Xvariable | Gvariable), subdata)
+        smry   <- summary(MODEL)
+        sign   <- smry$coefficients[2, 5]
+        pred_value <- stats::predict(MODEL, newdata = subdata, re.form = NA)
+        
         ran <- c()
-        for(bb in rownames(coef(MODEL)$Gvariable)){
-          ran <- rbind(ran, range(filter(subdata, Gvariable==bb)$Xvariable))
+        for (bb in rownames(stats::coef(MODEL)$Gvariable)) {
+          ran <- rbind(ran, range(dplyr::filter(subdata, Gvariable == bb)$Xvariable))
         }
-        slope_intercept <- data.frame(Order_q=rep(paste("q = ",qq,sep=""),nrow(coef(MODEL)$Gvariable)),
-                                      Gvariable=rownames(coef(MODEL)$Gvariable),
-                                      intercept=coef(MODEL)$Gvariable[,1],
-                                      slope=coef(MODEL)$Gvariable[,2],
-                                      ran)
-
-        colnames(slope_intercept)[5:6] <- c("x_min","x_max")
+        slope_intercept <- data.frame(
+          Order_q  = rep(paste0("q = ", qq), nrow(stats::coef(MODEL)$Gvariable)),
+          Gvariable = rownames(stats::coef(MODEL)$Gvariable),
+          intercept = stats::coef(MODEL)$Gvariable[, 1],
+          slope     = stats::coef(MODEL)$Gvariable[, 2],
+          ran
+        )
+        colnames(slope_intercept)[5:6] <- c("x_min", "x_max")
         part_fit <- rbind(part_fit, slope_intercept)
-
-        plotdata_text_part <- rbind(plotdata_text_part,
-                                    data.frame(slope = paste("slope = ", format(round(coef(MODEL)$Gvariable[,2],4), nsmall=4), sep=""),
-                                               Order_q = rep(paste("q = ",qq,sep=""), nrow(coef(MODEL)$Gvariable)),
-                                               Gvariable=rownames(coef(MODEL)$Gvariable)))
+        
+        plotdata_text_part <- rbind(
+          plotdata_text_part,
+          data.frame(
+            slope   = paste0("slope = ", format(round(stats::coef(MODEL)$Gvariable[, 2], 4), nsmall = 4)),
+            Order_q = rep(paste0("q = ", qq), nrow(stats::coef(MODEL)$Gvariable)),
+            Gvariable = rownames(stats::coef(MODEL)$Gvariable)
+          )
+        )
       }
-
-      lm_sign <- rbind(lm_sign, c(sign=ifelse(sign<0.05, "significant", "non-significant")))
-      lm_slope <- rbind(lm_slope, c(slope=summary$coefficients[2,1]))
-      plotdata <- rbind(plotdata, data.frame(subdata, pred=pred_value))
+      
+      lm_sign  <- rbind(lm_sign,  c(sign = ifelse(sign < 0.05, "significant", "non-significant")))
+      lm_slope <- rbind(lm_slope, c(slope = smry$coefficients[2, 1]))
+      plotdata <- rbind(plotdata, data.frame(subdata, pred = pred_value))
     }
-    lm_sign <- as.data.frame(lm_sign)
-    lm_slope <- as.data.frame(lm_slope)
-    rownames(lm_sign) <- paste("q = ", unique(output$Order_q), sep="")
-    rownames(lm_slope) <- paste("q = ", unique(output$Order_q), sep="")
-
-    plotdata$Order_q <- paste("q = ", plotdata$Order_q, sep="")
-
-    plotdata$sign <- sapply(plotdata$Order_q, function(yy){
-                        sign <- lm_sign[which(rownames(lm_sign)==yy),1]
-                        return(sign)
-                     })
-    plotdata$sign <- factor(plotdata$sign, levels=c("significant", "non-significant"))
-
-    slope_text <- data.frame(slope = paste("slope = ",round(lm_slope[,1],4),sep=""),
+    
+    lm_sign            <- as.data.frame(lm_sign)
+    lm_slope           <- as.data.frame(lm_slope)
+    rownames(lm_sign)  <- paste0("q = ", unique(output$Order_q))
+    rownames(lm_slope) <- paste0("q = ", unique(output$Order_q))
+    
+    plotdata$Order_q <- paste0("q = ", plotdata$Order_q)
+    plotdata$sign <- sapply(plotdata$Order_q, function(yy) lm_sign[which(rownames(lm_sign) == yy), 1])
+    plotdata$sign <- factor(plotdata$sign, levels = c("significant", "non-significant"))
+    slope_text <- data.frame(slope = paste0("slope = ", round(lm_slope[, 1], 4)),
                              Order_q = rownames(lm_slope))
     
-    if(!any(plotdata$sign == "non-significant")) {
-      dummy <- plotdata[1, ]
-      dummy$Xvariable <- NA 
-      dummy$pred <- NA
-      dummy$Stability <- NA
-      dummy$sign <- "non-significant"
+    if (!any(plotdata$sign == "non-significant")) {
+      dummy <- plotdata[1, ]; dummy$Xvariable <- NA; dummy$pred <- NA; dummy$Stability <- NA; dummy$sign <- "non-significant"
       plotdata <- rbind(plotdata, dummy)
     }
-    if(!any(plotdata$sign == "significant")) {
-      dummy <- plotdata[1, ]
-      dummy$Xvariable <- NA 
-      dummy$pred <- NA
-      dummy$Stability <- NA
-      dummy$sign <- "significant"
+    if (!any(plotdata$sign == "significant")) {
+      dummy <- plotdata[1, ]; dummy$Xvariable <- NA; dummy$pred <- NA; dummy$Stability <- NA; dummy$sign <- "significant"
       plotdata <- rbind(plotdata, dummy)
     }
-
-    if(model=="LMM"){
+    
+    if (identical(model, "LMM")) {
       plotdata_text_part$Order_q <- as.factor(plotdata_text_part$Order_q)
       plotdata_text_part$Gvariable <- as.factor(plotdata_text_part$Gvariable)
       part_fit$Order_q <- as.factor(part_fit$Order_q)
       part_fit$Gvariable <- as.factor(part_fit$Gvariable)
     }
-
-
-    if(is.null(by_group)==FALSE){
-
-      # Check if the number of unique 'Assemblage' is 4 or less
-      if (length(unique(plotdata$Gvariable)) <= 4){
-        cbPalette <- c("#EA0000","#64A600","#0066CC","#fb8500")
-      }else{
-        # If there are more than 4 assemblages, start with the same predefined color palette
-        # Then extend the palette by generating additional colors using the 'ggplotColors' function
-        cbPalette <- c(c("#EA0000","#64A600","#0066CC","#fb8500"),
-                       ggplotColors(length(unique(plotdata$Gvariable))-4))
+    
+    if (!is.null(by_group)) {
+      # palette
+      if (length(unique(plotdata$Gvariable)) <= 4) {
+        cbPalette <- c("#EA0000", "#64A600", "#0066CC", "#fb8500")
+      } else {
+        cbPalette <- c(c("#EA0000", "#64A600", "#0066CC", "#fb8500"),
+                       ggplotColors(length(unique(plotdata$Gvariable)) - 4))
       }
-
-      ### 0717 revise
-      if(length(unique(plotdata$Gvariable)) == 4){
-        hhjust1 <- 1
-        vvjust1 <- -3.5
-        hhjust2 <- rep(c(2.1,1),4)
-        vvjust2 <- rep(c(-1.7,-1.7,0.1,0.1),2)
-      }else{
-        gnum <- length(unique(plotdata$Gvariable))
-        if(gnum%%2==0){
-          create <- gnum/2
-        }else{
-          create <- (gnum + 1)/2
-        }
-        hhjust1 <- 1
-        vcreate <- 0.1+(-1.8)*c(create:0)
-        vvjust1 <- vcreate[1]
-        if(gnum%%2==1){
-          hhjust2 <- rep(c(2.1,1),create)[-length(rep(c(2.1,1),create))]
-          hhjust2 <- rep(hhjust2,2)
-          vvjust2 <- rep(vcreate[-1], each=2)[-length(rep(vcreate[-1], each=2))]
-          vvjust2 <- rep(vvjust2, 2)
-        }else{
-          hhjust2 <- rep(rep(c(2.1,1),create),2)
-          vvjust2 <- rep(rep(vcreate[-1], each=2),2)
-        }
+      
+      if (identical(model, "LMM")) {
+        plotout <- ggplot2::ggplot() +
+          ggplot2::geom_point(data = plotdata,
+                              ggplot2::aes(x = Xvariable, y = Stability, color = Gvariable), size = 2.7) +
+          ggplot2::geom_segment(data = part_fit,
+                                ggplot2::aes(x = x_min, xend = x_max,
+                                             y = intercept + slope * x_min,
+                                             yend = intercept + slope * x_max,
+                                             color = Gvariable)) +
+          ggplot2::geom_line(data = plotdata,
+                             ggplot2::aes(x = Xvariable, y = pred, linetype = sign),
+                             linewidth = 1.2, color = "black") +
+          ggplot2::scale_linetype_manual(values = c("solid", "dashed"), drop = FALSE) +
+          ggplot2::scale_color_manual(values = cbPalette) +
+          ggplot2::facet_wrap(~ Order_q, scales = "fixed",
+                              ncol = min(5, length(unique(plotdata$Order_q)))) +
+          ggplot2::labs(linetype = "", color = by_group) +
+          ggplot2::xlab(x_variable) + ggplot2::ylab("Stability") +
+          ggplot2::theme_bw() +
+          ggplot2::geom_text(data = slope_text, ggplot2::aes(x = -Inf, y = -Inf, label = slope),
+                             x = max(plotdata$Xvariable, na.rm = TRUE),
+                             y = min(plotdata$Stability, na.rm = TRUE),
+                             size = 3.5, hjust = 1, vjust = -3.5) +
+          ggplot2::geom_text(data = plotdata_text_part,
+                             ggplot2::aes(x = -Inf, y = -Inf, label = slope, color = Gvariable),
+                             x = max(plotdata$Xvariable, na.rm = TRUE),
+                             y = min(plotdata$Stability, na.rm = TRUE),
+                             size = 3.5, hjust = 2.1, vjust = -1.7,
+                             key_glyph = ggplot2::draw_key_path) +
+          ggplot2::theme(
+            strip.text   = ggplot2::element_text(size = 13),
+            legend.title = ggplot2::element_text(size = 13),
+            legend.text  = ggplot2::element_text(size = 12),
+            legend.key.size = grid::unit(0.8, "cm"),
+            axis.title   = ggplot2::element_text(size = 16)
+          ) +
+          ggplot2::guides(linetype = ggplot2::guide_legend(keywidth = 2.5))
+      } else {
+        plotout <- ggplot2::ggplot() +
+          ggplot2::geom_point(data = plotdata,
+                              ggplot2::aes(x = Xvariable, y = Stability, color = Gvariable), size = 2.7) +
+          ggplot2::geom_line(data = plotdata,
+                             ggplot2::aes(x = Xvariable, y = pred, linetype = sign),
+                             linewidth = 1.2, color = "black") +
+          ggplot2::scale_linetype_manual(values = c("solid", "dashed"), drop = FALSE) +
+          ggplot2::scale_color_manual(values = cbPalette) +
+          ggplot2::facet_wrap(~ Order_q, scales = "fixed",
+                              ncol = min(5, length(unique(plotdata$Order_q)))) +
+          ggplot2::labs(linetype = "", color = by_group) +
+          ggplot2::xlab(x_variable) + ggplot2::ylab("Stability") +
+          ggplot2::theme_bw() +
+          ggplot2::geom_text(data = slope_text, ggplot2::aes(x = -Inf, y = -Inf, label = slope),
+                             x = max(plotdata$Xvariable, na.rm = TRUE),
+                             y = min(plotdata$Stability, na.rm = TRUE),
+                             size = 5, hjust = 1, vjust = 0.1) +
+          ggplot2::theme(
+            strip.text   = ggplot2::element_text(size = 13),
+            legend.title = ggplot2::element_text(size = 13),
+            legend.text  = ggplot2::element_text(size = 12),
+            legend.key.size = grid::unit(0.8, "cm"),
+            axis.title   = ggplot2::element_text(size = 16)
+          ) +
+          ggplot2::guides(linetype = ggplot2::guide_legend(keywidth = 2.5))
       }
-
-      if(model=="LMM"){
-        plotout <- ggplot()+
-          geom_point(data = plotdata, aes(x=Xvariable, y=Stability, color=Gvariable), size=2.7)+
-          geom_segment(data = part_fit,
-                       aes(x=x_min, xend=x_max, y=intercept+slope*x_min, yend=intercept+slope*x_max, color=Gvariable))+
-          geom_line(data = plotdata, aes(x=Xvariable, y=pred, linetype = sign), linewidth=1.2, color="black")+
-          scale_linetype_manual(values=c("solid","dashed"), drop = FALSE)+
-          scale_color_manual(values = cbPalette)+
-          facet_wrap(.~Order_q, scales="fixed", ncol = min(5, length(unique(plotdata$Order_q))))+
-          labs(linetype="", color=by_group)+
-          xlab(label=x_variable)+
-          ylab(label="Stability")+ theme_bw()+
-          geom_text(data=slope_text, aes(x = -Inf, y = -Inf, label = slope),
-                    x=max(plotdata$Xvariable, na.rm = TRUE),
-                    y=min(plotdata$Stability, na.rm = TRUE), size=3.5, hjust=hhjust1, vjust=vvjust1)+
-          geom_text(data=plotdata_text_part,
-                    aes(x = -Inf, y = -Inf, label=slope, color=Gvariable),
-                    x=max(plotdata$Xvariable, na.rm = TRUE),
-                    y=min(plotdata$Stability, na.rm = TRUE), size=3.5,
-                    hjust=hhjust2, vjust=vvjust2, key_glyph=draw_key_path)+
-          theme(strip.text = element_text(size=13), legend.title = element_text(size=13),
-                legend.text = element_text(size=12), legend.key.size = unit(0.8, 'cm'),
-                axis.title = element_text(size=16))+
-          guides(linetype = guide_legend(keywidth = 2.5))
-
-      }else{
-        plotout <- ggplot()+
-          geom_point(data = plotdata, aes(x=Xvariable, y=Stability, color=Gvariable), size=2.7)+
-          geom_line(data = plotdata, aes(x=Xvariable, y=pred, linetype = sign), linewidth=1.2, color="black")+
-          scale_linetype_manual(values=c("solid","dashed"), drop = FALSE)+
-          scale_color_manual(values = cbPalette)+
-          facet_wrap(.~Order_q, scales="fixed", ncol = min(5, length(unique(plotdata$Order_q))))+
-          labs(linetype="", color=by_group)+
-          xlab(label=x_variable)+
-          ylab(label="Stability")+ theme_bw()+
-          geom_text(data=slope_text, aes(x = -Inf, y = -Inf, label = slope),
-                    x=max(plotdata$Xvariable, na.rm = TRUE),
-                    y=min(plotdata$Stability, na.rm = TRUE), size=5, hjust=1, vjust=0.1)+
-          theme(strip.text = element_text(size=13), legend.title = element_text(size=13),
-                legend.text = element_text(size=12), legend.key.size = unit(0.8, 'cm'),
-                axis.title = element_text(size=16))+
-          guides(linetype = guide_legend(keywidth = 2.5))
-      }
-
-    }else{
-      plotout <- ggplot(plotdata, aes(x=Xvariable, y=Stability))+
-                    geom_point(size=2.7)+
-                    geom_line(aes(x=Xvariable, y=pred, linetype = sign), linewidth=1.2, color="black")+
-                    scale_linetype_manual(values=c("solid","dashed"), drop = FALSE)+
-                    facet_wrap(.~Order_q, scales="fixed", ncol = min(5, length(unique(plotdata$Order_q))))+
-                    labs(linetype="")+
-                    xlab(label=x_variable)+
-                    ylab(label="Stability")+ theme_bw()+
-                    geom_text(data=slope_text, aes(x = -Inf, y = -Inf, label = slope),
-                              x=max(plotdata$Xvariable, na.rm = TRUE),
-                              y=min(plotdata$Stability, na.rm = TRUE), size=5, hjust=1, vjust=0.1)+
-                    theme(strip.text = element_text(size=13), legend.title = element_text(size=13),
-                          legend.text = element_text(size=12), legend.key.size = unit(0.8, 'cm'),
-                          axis.title = element_text(size=16))+
-                    guides(linetype = guide_legend(keywidth = 2.5))
+      
+    } else {  # no by_group
+      plotout <- ggplot2::ggplot(plotdata, ggplot2::aes(x = Xvariable, y = Stability)) +
+        ggplot2::geom_point(size = 2.7) +
+        ggplot2::geom_line(ggplot2::aes(x = Xvariable, y = pred, linetype = sign),
+                           linewidth = 1.2, color = "black") +
+        ggplot2::scale_linetype_manual(values = c("solid", "dashed"), drop = FALSE) +
+        ggplot2::facet_wrap(~ Order_q, scales = "fixed",
+                            ncol = min(5, length(unique(plotdata$Order_q)))) +
+        ggplot2::labs(linetype = "") +
+        ggplot2::xlab(x_variable) + ggplot2::ylab("Stability") +
+        ggplot2::theme_bw() +
+        ggplot2::geom_text(data = slope_text, ggplot2::aes(x = -Inf, y = -Inf, label = slope),
+                           x = max(plotdata$Xvariable, na.rm = TRUE),
+                           y = min(plotdata$Stability, na.rm = TRUE),
+                           size = 5, hjust = 1, vjust = 0.1) +
+        ggplot2::theme(
+          strip.text   = ggplot2::element_text(size = 13),
+          legend.title = ggplot2::element_text(size = 13),
+          legend.text  = ggplot2::element_text(size = 12),
+          legend.key.size = grid::unit(0.8, "cm"),
+          axis.title   = ggplot2::element_text(size = 16)
+        ) +
+        ggplot2::guides(linetype = ggplot2::guide_legend(keywidth = 2.5))
     }
-
-  }else{
-
-    # fit model
-    lm_sign <-c()
+    
+    ## ========================================================================
+    ## B) Multiple (Site) case
+    ## ========================================================================
+  } else {
+    
+    lm_sign  <- c()
     lm_slope <- c()
     plotdata <- c()
     plotdata_text_part <- c()
     part_fit <- c()
-
-    for(qq in unique(output$Order_q)){
-      subdata <- filter(output, Order_q==qq)
-      if(model=="lm"){
+    
+    for (qq in unique(output$Order_q)) {
+      subdata <- dplyr::filter(output, Order_q == qq)
+      
+      if (identical(model, "lm")) {
         sign_num <- 4
-
-        MODEL_G <- lm(Gamma ~ Xvariable, subdata)
-        sum_gamma <- summary(MODEL_G)
-        pred_G <- predict(MODEL_G, newdata=subdata)
-        MODEL_A <- lm(Alpha ~ Xvariable, subdata)
-        sum_alpha <- summary(MODEL_A)
-        pred_A <- predict(MODEL_A, newdata=subdata)
-        # MODEL_BM <- lm(Stab_Beta_multiplicative ~ Xvariable, subdata)
-        # sum_beta_multi <- summary(MODEL_BM)
-        # pred_BM <- predict(MODEL_BM, newdata=subdata)
-        MODEL_BA <- lm(Beta ~ Xvariable, subdata)
-        sum_beta_add <- summary(MODEL_BA)
-        pred_BA <- predict(MODEL_BA, newdata=subdata)
-        MODEL_S <- lm(Synchrony ~ Xvariable, subdata)
-        sum_syn <- summary(MODEL_S)
-        pred_S <- predict(MODEL_S, newdata=subdata)
-
-      }else{
+        MODEL_G <- stats::lm(Gamma ~ Xvariable, subdata);     sum_gamma <- summary(MODEL_G); pred_G <- stats::predict(MODEL_G, newdata = subdata)
+        MODEL_A <- stats::lm(Alpha ~ Xvariable, subdata);     sum_alpha <- summary(MODEL_A); pred_A <- stats::predict(MODEL_A, newdata = subdata)
+        MODEL_BA<- stats::lm(Beta  ~ Xvariable, subdata);     sum_beta_add <- summary(MODEL_BA); pred_BA <- stats::predict(MODEL_BA, newdata = subdata)
+        MODEL_S <- stats::lm(Synchrony ~ Xvariable, subdata); sum_syn <- summary(MODEL_S); pred_S <- stats::predict(MODEL_S, newdata = subdata)
+        
+      } else {
         sign_num <- 5
-
-        MODEL_G <- lmer(Gamma ~ 1 + Xvariable + (1 + Xvariable | Gvariable), subdata)
-        sum_gamma <- summary(MODEL_G)
-        pred_G <- predict(MODEL_G, newdata=subdata, re.form=NA)
-        MODEL_A <- lmer(Alpha ~ 1 + Xvariable + (1 + Xvariable | Gvariable), subdata)
-        sum_alpha <- summary(MODEL_A)
-        pred_A <- predict(MODEL_A, newdata=subdata, re.form=NA)
-        # MODEL_BM <- lmer(Stab_Beta_multiplicative ~ 1 + Xvariable + (1 + Xvariable | Gvariable), subdata)
-        # sum_beta_multi <- summary(MODEL_BM)
-        # pred_BM <- predict(MODEL_BM, newdata=subdata, re.form=NA)
-        MODEL_BA <- lmer(Beta ~ 1 + Xvariable + (1 + Xvariable | Gvariable), subdata)
-        sum_beta_add <- summary(MODEL_BA)
-        pred_BA <- predict(MODEL_BA, newdata=subdata, re.form=NA)
-        MODEL_S <- lmer(Synchrony ~ 1 + Xvariable + (1 + Xvariable | Gvariable), subdata)
-        sum_syn <- summary(MODEL_S)
-        pred_S <- predict(MODEL_S, newdata=subdata, re.form=NA)
-
+        MODEL_G <- lmerTest::lmer(Gamma     ~ 1 + Xvariable + (1 + Xvariable | Gvariable), subdata); sum_gamma <- summary(MODEL_G); pred_G <- stats::predict(MODEL_G, newdata = subdata, re.form = NA)
+        MODEL_A <- lmerTest::lmer(Alpha     ~ 1 + Xvariable + (1 + Xvariable | Gvariable), subdata); sum_alpha <- summary(MODEL_A); pred_A <- stats::predict(MODEL_A, newdata = subdata, re.form = NA)
+        MODEL_BA<- lmerTest::lmer(Beta      ~ 1 + Xvariable + (1 + Xvariable | Gvariable), subdata); sum_beta_add <- summary(MODEL_BA); pred_BA <- stats::predict(MODEL_BA, newdata = subdata, re.form = NA)
+        MODEL_S <- lmerTest::lmer(Synchrony ~ 1 + Xvariable + (1 + Xvariable | Gvariable), subdata); sum_syn <- summary(MODEL_S); pred_S <- stats::predict(MODEL_S, newdata = subdata, re.form = NA)
+        
         ran <- c()
-        for(bb in rownames(coef(MODEL_G)$Gvariable)){
-          ran <- rbind(ran, range(filter(subdata, Gvariable==bb)$Xvariable))
+        for (bb in rownames(stats::coef(MODEL_G)$Gvariable)) {
+          ran <- rbind(ran, range(dplyr::filter(subdata, Gvariable == bb)$Xvariable))
         }
-        slope_intercept <- data.frame(Order_q=rep(paste("q = ",qq,sep=""),nrow(coef(MODEL_G)$Gvariable)*4),
-                                      type=rep(c("Gamma","Alpha","Beta","Synchrony"), each=nrow(coef(MODEL_G)$Gvariable)),
-                                      Gvariable=rep(rownames(coef(MODEL_G)$Gvariable), 4),
-                                      intercept=c(coef(MODEL_G)$Gvariable[,1],
-                                                  coef(MODEL_A)$Gvariable[,1],
-                                                  coef(MODEL_BA)$Gvariable[,1],
-                                                  coef(MODEL_S)$Gvariable[,1]),
-                                      slope=c(coef(MODEL_G)$Gvariable[,2],
-                                              coef(MODEL_A)$Gvariable[,2],
-                                              coef(MODEL_BA)$Gvariable[,2],
-                                              coef(MODEL_S)$Gvariable[,2]),
-                                      rbind(ran,ran,ran,ran))
-        colnames(slope_intercept)[6:7] <- c("x_min","x_max")
+        slope_intercept <- data.frame(
+          Order_q  = rep(paste0("q = ", qq), nrow(stats::coef(MODEL_G)$Gvariable) * 4),
+          type     = rep(c("Gamma", "Alpha", "Beta", "Synchrony"), each = nrow(stats::coef(MODEL_G)$Gvariable)),
+          Gvariable= rep(rownames(stats::coef(MODEL_G)$Gvariable), 4),
+          intercept= c(stats::coef(MODEL_G)$Gvariable[,1],
+                       stats::coef(MODEL_A)$Gvariable[,1],
+                       stats::coef(MODEL_BA)$Gvariable[,1],
+                       stats::coef(MODEL_S)$Gvariable[,1]),
+          slope    = c(stats::coef(MODEL_G)$Gvariable[,2],
+                       stats::coef(MODEL_A)$Gvariable[,2],
+                       stats::coef(MODEL_BA)$Gvariable[,2],
+                       stats::coef(MODEL_S)$Gvariable[,2]),
+          rbind(ran, ran, ran, ran)
+        )
+        colnames(slope_intercept)[6:7] <- c("x_min", "x_max")
         part_fit <- rbind(part_fit, slope_intercept)
-
-        plotdata_text_part <- rbind(plotdata_text_part,
-                                    data.frame(slope_gamma=paste("slope = ", format(round(coef(MODEL_G)$Gvariable[,2],4), nsmall=4), sep=""),
-                                               slope_alpha=paste("slope = ", format(round(coef(MODEL_A)$Gvariable[,2],4), nsmall=4), sep=""),
-                                               slope_beta=paste("slope = ", format(round(coef(MODEL_BA)$Gvariable[,2],4), nsmall=4), sep=""),
-                                               slope_synchrony=paste("slope = ", format(round(coef(MODEL_S)$Gvariable[,2],4), nsmall=4), sep=""),
-                                               Order_q=rep(paste("q = ",qq,sep=""), nrow(coef(MODEL_G)$Gvariable)),
-                                               Gvariable=rownames(coef(MODEL_G)$Gvariable)))
+        
+        plotdata_text_part <- rbind(
+          plotdata_text_part,
+          data.frame(
+            slope_gamma     = paste0("slope = ", format(round(stats::coef(MODEL_G)$Gvariable[,2], 4), nsmall = 4)),
+            slope_alpha     = paste0("slope = ", format(round(stats::coef(MODEL_A)$Gvariable[,2], 4), nsmall = 4)),
+            slope_beta      = paste0("slope = ", format(round(stats::coef(MODEL_BA)$Gvariable[,2], 4), nsmall = 4)),
+            slope_synchrony = paste0("slope = ", format(round(stats::coef(MODEL_S)$Gvariable[,2], 4), nsmall = 4)),
+            Order_q = rep(paste0("q = ", qq), nrow(stats::coef(MODEL_G)$Gvariable)),
+            Gvariable = rownames(stats::coef(MODEL_G)$Gvariable)
+          )
+        )
       }
-
-      lm_sign <- rbind(lm_sign,
-                       c(gamma=ifelse(sum_gamma$coefficients[2,sign_num]<0.05, "significant", "non-significant"),
-                         alpha=ifelse(sum_alpha$coefficients[2,sign_num]<0.05, "significant", "non-significant"),
-                         beta_add=ifelse(sum_beta_add$coefficients[2,sign_num]<0.05, "significant", "non-significant"),
-                         synchrony=ifelse(sum_syn$coefficients[2,sign_num]<0.05, "significant", "non-significant")))
-      lm_slope <- rbind(lm_slope,
-                        c(gamma=sum_gamma$coefficients[2,1],
-                          alpha=sum_alpha$coefficients[2,1],
-                          beta_add=sum_beta_add$coefficients[2,1],
-                          synchrony=sum_syn$coefficients[2,1]))
-      plotdata <- rbind(plotdata, data.frame(subdata, pred_G=pred_G, pred_A=pred_A, pred_BA=pred_BA, pred_S=pred_S))
+      
+      lm_sign <- rbind(
+        lm_sign,
+        c(
+          gamma     = ifelse(sum_gamma$coefficients[2, sign_num] < 0.05, "significant", "non-significant"),
+          alpha     = ifelse(sum_alpha$coefficients[2, sign_num] < 0.05, "significant", "non-significant"),
+          beta_add  = ifelse(sum_beta_add$coefficients[2, sign_num] < 0.05, "significant", "non-significant"),
+          synchrony = ifelse(sum_syn$coefficients[2, sign_num] < 0.05, "significant", "non-significant")
+        )
+      )
+      lm_slope <- rbind(
+        lm_slope,
+        c(
+          gamma     = sum_gamma$coefficients[2,1],
+          alpha     = sum_alpha$coefficients[2,1],
+          beta_add  = sum_beta_add$coefficients[2,1],
+          synchrony = sum_syn$coefficients[2,1]
+        )
+      )
+      plotdata <- rbind(plotdata,
+                        data.frame(subdata, pred_G = pred_G, pred_A = pred_A, pred_BA = pred_BA, pred_S = pred_S))
     }
-    lm_sign <- as.data.frame(lm_sign)
+    
+    lm_sign  <- as.data.frame(lm_sign)
     lm_slope <- as.data.frame(lm_slope)
-    rownames(lm_sign) <- paste("q = ", unique(output$Order_q), sep="")
-    rownames(lm_slope) <- paste("q = ", unique(output$Order_q), sep="")
-
-    plotdata$Order_q <- paste("q = ", plotdata$Order_q, sep="")
-
-    plotdata$sign_G <- sapply(plotdata$Order_q, function(yy){
-      lm_sign[which(rownames(lm_sign)==yy),1]
-    })
-    plotdata$sign_A <- sapply(plotdata$Order_q, function(yy){
-      lm_sign[which(rownames(lm_sign)==yy),2]
-    })
-    plotdata$sign_BA <- sapply(plotdata$Order_q, function(yy){
-      lm_sign[which(rownames(lm_sign)==yy),3]
-    })
-    plotdata$sign_S <- sapply(plotdata$Order_q, function(yy){
-      lm_sign[which(rownames(lm_sign)==yy),4]
-    })
-
-    plotdata_Stab <- data.frame(Site = rep(plotdata$Site,4),
-                                Order_q = rep(plotdata$Order_q,4),
-                                Stability = c(plotdata$Gamma, plotdata$Alpha, plotdata$Beta, plotdata$Synchrony),
-                                pred = c(plotdata$pred_G, plotdata$pred_A, plotdata$pred_BA, plotdata$pred_S),
-                                sign = c(plotdata$sign_G, plotdata$sign_A, plotdata$sign_BA, plotdata$sign_S),
-                                type = rep(c("Gamma","Alpha","Beta","Synchrony"), each = nrow(plotdata)),
-                                Xvariable = rep(plotdata$Xvariable,4))
-
-    if(is.null(by_group)==FALSE){
-      plotdata_Stab$Gvariable <- rep(plotdata$Gvariable,4)
-      plotdata_Stab$Gvariable <- as.factor(plotdata_Stab$Gvariable)
-      plotdata$Gvariable <- as.factor(plotdata$Gvariable)
+    rownames(lm_sign)  <- paste0("q = ", unique(output$Order_q))
+    rownames(lm_slope) <- paste0("q = ", unique(output$Order_q))
+    
+    plotdata$Order_q <- paste0("q = ", plotdata$Order_q)
+    plotdata$sign_G  <- sapply(plotdata$Order_q, function(yy) lm_sign[which(rownames(lm_sign) == yy), 1])
+    plotdata$sign_A  <- sapply(plotdata$Order_q, function(yy) lm_sign[which(rownames(lm_sign) == yy), 2])
+    plotdata$sign_BA <- sapply(plotdata$Order_q, function(yy) lm_sign[which(rownames(lm_sign) == yy), 3])
+    plotdata$sign_S  <- sapply(plotdata$Order_q, function(yy) lm_sign[which(rownames(lm_sign) == yy), 4])
+    
+    plotdata_Stab <- data.frame(
+      Site     = rep(plotdata$Site, 4),
+      Order_q  = rep(plotdata$Order_q, 4),
+      Stability= c(plotdata$Gamma, plotdata$Alpha, plotdata$Beta, plotdata$Synchrony),
+      pred     = c(plotdata$pred_G, plotdata$pred_A, plotdata$pred_BA, plotdata$pred_S),
+      sign     = c(plotdata$sign_G, plotdata$sign_A, plotdata$sign_BA, plotdata$sign_S),
+      type     = rep(c("Gamma","Alpha","Beta","Synchrony"), each = nrow(plotdata)),
+      Xvariable= rep(plotdata$Xvariable, 4)
+    )
+    
+    if (!is.null(by_group)) {
+      plotdata_Stab$Gvariable <- as.factor(rep(plotdata$Gvariable, 4))
+      plotdata$Gvariable      <- as.factor(plotdata$Gvariable)
     }
-
-    plotdata_Stab$sign <- factor(plotdata_Stab$sign, levels=c("significant", "non-significant"))
-    plotdata_Stab$type <- factor(plotdata_Stab$type, levels = c("Gamma","Alpha","Beta","Synchrony"))
+    
+    plotdata_Stab$sign    <- factor(plotdata_Stab$sign, levels = c("significant", "non-significant"))
+    plotdata_Stab$type    <- factor(plotdata_Stab$type, levels = c("Gamma","Alpha","Beta","Synchrony"))
     plotdata_Stab$Order_q <- as.factor(plotdata_Stab$Order_q)
     
-    if(!any(plotdata_Stab$sign == "non-significant")) {
-      dummy <- plotdata_Stab[1, ]
-      dummy$Xvariable <- NA 
-      dummy$pred <- NA
-      dummy$Stability <- NA
-      dummy$sign <- "non-significant"
+    if (!any(plotdata_Stab$sign == "non-significant")) {
+      dummy <- plotdata_Stab[1, ]; dummy$Xvariable <- NA; dummy$pred <- NA; dummy$Stability <- NA; dummy$sign <- "non-significant"
       plotdata_Stab <- rbind(plotdata_Stab, dummy)
     }
-    if(!any(plotdata_Stab$sign == "significant")) {
-      dummy <- plotdata_Stab[1, ]
-      dummy$Xvariable <- NA
-      dummy$pred <- NA
-      dummy$Stability <- NA
-      dummy$sign <- "significant"
+    if (!any(plotdata_Stab$sign == "significant")) {
+      dummy <- plotdata_Stab[1, ]; dummy$Xvariable <- NA; dummy$pred <- NA; dummy$Stability <- NA; dummy$sign <- "significant"
       plotdata_Stab <- rbind(plotdata_Stab, dummy)
     }
-
-
-    # plotdata$sign_S <- factor(plotdata$sign_S, levels=c("significant", "non-significant"))
-    # plotdata$Order_q <- as.factor(plotdata$Order_q)
-
-
-    slope_text_Stab <- data.frame(slope = paste("slope = ",format(round(as.vector(as.matrix(lm_slope)),4), nsmall=4),sep=""),
-                                  Order_q = rep(rownames(lm_slope),4),
-                                  type = rep(c("Gamma","Alpha","Beta","Synchrony"), each = nrow(lm_slope)))
-    slope_text_Stab$type <- factor(slope_text_Stab$type, levels = c("Gamma","Alpha","Beta","Synchrony"))
+    
+    slope_text_Stab <- data.frame(
+      slope   = paste0("slope = ", format(round(as.vector(as.matrix(lm_slope)), 4), nsmall = 4)),
+      Order_q = rep(rownames(lm_slope), 4),
+      type    = rep(c("Gamma","Alpha","Beta","Synchrony"), each = nrow(lm_slope))
+    )
+    slope_text_Stab$type    <- factor(slope_text_Stab$type, levels = c("Gamma","Alpha","Beta","Synchrony"))
     slope_text_Stab$Order_q <- as.factor(slope_text_Stab$Order_q)
-
-    if(model=="LMM"){
-      plotdata_text_part <- data.frame(slope = c(plotdata_text_part$slope_gamma,
-                                                 plotdata_text_part$slope_alpha,
-                                                 plotdata_text_part$slope_beta,
-                                                 plotdata_text_part$slope_synchrony),
-                                       Order_q = rep(plotdata_text_part$Order_q, 4),
-                                       type = rep(c("Gamma","Alpha","Beta","Synchrony"), each=nrow(plotdata_text_part)),
-                                       Gvariable = rep(plotdata_text_part$Gvariable, 4))
-      plotdata_text_part$type <- as.factor(plotdata_text_part$type)
-      plotdata_text_part$Order_q <- as.factor(plotdata_text_part$Order_q)
-      plotdata_text_part$Gvariable <- as.factor(plotdata_text_part$Gvariable)
+    
+    if (identical(model, "LMM")) {
+      plotdata_text_part <- data.frame(
+        slope    = c(plotdata_text_part$slope_gamma,
+                     plotdata_text_part$slope_alpha,
+                     plotdata_text_part$slope_beta,
+                     plotdata_text_part$slope_synchrony),
+        Order_q  = rep(plotdata_text_part$Order_q, 4),
+        type     = rep(c("Gamma","Alpha","Beta","Synchrony"), each = nrow(plotdata_text_part)),
+        Gvariable= rep(plotdata_text_part$Gvariable, 4)
+      )
+      plotdata_text_part$type     <- as.factor(plotdata_text_part$type)
+      plotdata_text_part$Order_q  <- as.factor(plotdata_text_part$Order_q)
+      plotdata_text_part$Gvariable<- as.factor(plotdata_text_part$Gvariable)
       part_fit$Gvariable <- as.factor(part_fit$Gvariable)
-      part_fit$Order_q <- as.factor(part_fit$Order_q)
-      part_fit$type <- as.factor(part_fit$type)
+      part_fit$Order_q   <- as.factor(part_fit$Order_q)
+      part_fit$type      <- as.factor(part_fit$type)
     }
-
-    # slope_text_Syn <- data.frame(slope = paste("slope = ",round(lm_slope[,5],4),sep=""),
-    #                              Order_q = rownames(lm_slope))
-    # slope_text_Syn$Order_q <- as.factor(slope_text_Syn$Order_q)
-
-    tyG <- min(filter(plotdata_Stab, type=="Gamma")$Stability, na.rm = TRUE)
-    tyA <- min(filter(plotdata_Stab, type=="Alpha")$Stability, na.rm = TRUE)
-    # tyBM <- max(filter(plotdata_Stab, type=="Beta (multiplicative)")$Stability)
-    tyBA <- max(filter(plotdata_Stab, type=="Beta")$Stability, na.rm = TRUE)
-    tyS <- min(filter(plotdata_Stab, type=="Synchrony")$Stability, na.rm = TRUE)
-
-    if(is.null(by_group)==FALSE){
-
-      # Check if the number of unique 'Assemblage' is 4 or less
-      if (length(unique(plotdata_Stab$Gvariable)) <= 4){
-        cbPalette <- c("#EA0000","#64A600","#0066CC","#fb8500")
-      }else{
-        # If there are more than 4 assemblages, start with the same predefined color palette
-        # Then extend the palette by generating additional colors using the 'ggplotColors' function
-        cbPalette <- c(c("#EA0000","#64A600","#0066CC","#fb8500"),
-                       ggplotColors(length(unique(plotdata_Stab$Gvariable))-4))
+    
+    tyG <- min(dplyr::filter(plotdata_Stab, type == "Gamma")$Stability,     na.rm = TRUE)
+    tyA <- min(dplyr::filter(plotdata_Stab, type == "Alpha")$Stability,     na.rm = TRUE)
+    tyBA<- max(dplyr::filter(plotdata_Stab, type == "Beta")$Stability,      na.rm = TRUE)
+    tyS <- min(dplyr::filter(plotdata_Stab, type == "Synchrony")$Stability, na.rm = TRUE)
+    
+    Q    <- length(unique(plotdata_Stab$Order_q))
+    gnum <- if (!is.null(by_group)) length(unique(plotdata$Gvariable)) else 0
+    
+    if (!is.null(by_group)) {
+      if (length(unique(plotdata_Stab$Gvariable)) <= 4) {
+        cbPalette <- c("#EA0000", "#64A600", "#0066CC", "#fb8500")
+      } else {
+        cbPalette <- c(c("#EA0000", "#64A600", "#0066CC", "#fb8500"),
+                       ggplotColors(length(unique(plotdata_Stab$Gvariable)) - 4))
       }
-
-      if(length(unique(plotdata$Gvariable)) == 4){
-        gnum <- 4
-        hhjust1 <- 1
-        vvjust1 <- rep(c(-3.5,-3.5,4.1,-3.5),each=2)
-        hhjust2 <- rep(c(2.1,1),16)
-        vvjust2 <- c(rep(c(-1.7,-1.7,0.1,0.1),4), rep(c(1.1,1.1,2.6,2.6),2), rep(c(-1.7,-1.7,0.1,0.1),2))
-      }else{
-        gnum <- length(unique(plotdata$Gvariable))
-        if(gnum%%2==0){
-          create <- gnum/2
-        }else{
-          create <- (gnum + 1)/2
-        }
-        hhjust1 <- 1
-        vcreate_1 <- 0.1+(-1.8)*c(create:0)
-        vcreate_2 <- 1.1+1.5*c(create:0)
-        vvjust1 <- rep(c(vcreate_1[1], vcreate_1[1], vcreate_2[1], vcreate_1[1]), each=2)
-        if(gnum%%2==1){
-          hhjust2 <- rep(c(2.1,1),create)[-length(rep(c(2.1,1),create))]
-          hhjust2 <- rep(hhjust2,8)
-          vvjust2_1 <- rep(vcreate_1[-1], each=2)[-length(rep(vcreate_1[-1], each=2))]
-          vvjust2_2 <- rev(rep(vcreate_2[-1], each=2))[-length(rev(rep(vcreate_2[-1], each=2)))]
-          vvjust2 <- c(rep(vvjust2_1, 4), rep(vvjust2_2, 2), rep(vvjust2_1, 2))
-        }else{
-          hhjust2 <- rep(rep(c(2.1,1),create),8)
-          vvjust2 <- c(rep(rep(vcreate_1[-1], each=2),4), rep(rep(rev(vcreate_2[-1]), each=2),2),
-                       rep(rep(vcreate_1[-1], each=2),2))
-        }
-      }
-
-
-      if(model=="LMM"){
-        plotout1 <- ggplot()+
-          geom_point(data = plotdata_Stab, aes(x=Xvariable, y=Stability, color=Gvariable), size=2.7)+
-          geom_segment(data=part_fit,
-                       aes(x=x_min, xend=x_max, y=intercept+slope*x_min, yend=intercept+slope*x_max, color=Gvariable))+
-          geom_line(data = plotdata_Stab, aes(x=Xvariable, y=pred, linetype = sign), linewidth=1.2, color="black")+
-          scale_linetype_manual(values=c("solid","dashed"), drop = FALSE)+
-          scale_color_manual(values = cbPalette)+
-          facet_grid(type~Order_q, scales = "free_y")+
-          labs(linetype="", color=by_group)+
-          xlab(label=x_variable)+
-          ylab(label="Stability and Synchrony")+ theme_bw()+
-          geom_text(data=slope_text_Stab, aes(x = -Inf, y = -Inf, label = slope),
-                    x=max(plotdata_Stab$Xvariable, na.rm = TRUE),
-                    y=rep(c(tyG, tyA, tyBA, tyS),each=2), size=3.5,
-                    hjust=hhjust1, vjust=vvjust1)+
-          geom_text(data=plotdata_text_part,
-                    aes(x = -Inf, y = -Inf, label=slope, color=Gvariable),
-                    x=rep(max(plotdata_Stab$Xvariable, na.rm = TRUE),gnum*8),
-                    y=rep(c(tyG, tyA, tyBA, tyS),each=gnum*2), size=3.5,
-                    hjust=hhjust2, vjust=vvjust2, key_glyph=draw_key_path)+
-          theme(strip.text = element_text(size=13), legend.title = element_text(size=13),
-                legend.text = element_text(size=12), legend.key.size = unit(0.8, 'cm'),
-                axis.title = element_text(size=16))+
-          guides(linetype = guide_legend(keywidth = 2.5))
-
-      }else{
-        plotout1 <- ggplot()+
-          geom_point(data = plotdata_Stab, aes(x=Xvariable, y=Stability, color=Gvariable), size=2.7)+
-          geom_line(data = plotdata_Stab, aes(x=Xvariable, y=pred, linetype = sign), linewidth=1.2, color="black")+
-          scale_linetype_manual(values=c("solid","dashed"), drop = FALSE)+
-          scale_color_manual(values = cbPalette)+
-          facet_grid(type~Order_q, scales = "free_y")+
-          labs(linetype="", color=by_group)+
-          xlab(label=x_variable)+
-          ylab(label="Stability and Synchrony")+ theme_bw()+
-          geom_text(data=slope_text_Stab, aes(x = -Inf, y = -Inf, label = slope),
-                    x=max(plotdata_Stab$Xvariable, na.rm = TRUE),
-                    y=rep(c(tyG, tyA, tyBA, tyS),each=2), size=5,
-                    hjust=1, vjust=rep(c(0.1,0.1,1.1,0.1),each=2))+
-          theme(strip.text = element_text(size=13), legend.title = element_text(size=13),
-                legend.text = element_text(size=12), legend.key.size = unit(0.8, 'cm'),
-                axis.title = element_text(size=16))+
-          guides(linetype = guide_legend(keywidth = 2.5))
-      }
-
-
-
-      # plotout2 <- ggplot(plotdata, aes(x=Xvariable, y=Synchrony))+
-      #               geom_point(aes(color=Gvariable), size=2.7)+
-      #               geom_line(aes(x=Xvariable, y=pred_S, linetype = sign_S), linewidth=1.2, color="black")+
-      #               scale_linetype_manual(values=c("solid","dashed"), drop = FALSE)+
-      #               facet_wrap(.~Order_q, scales = "fixed")+
-      #               labs(linetype="", color=by_group)+
-      #               xlab(label=x_variable)+
-      #               ylab(label="Synchrony")+ theme_bw()+
-      #               geom_text(data=slope_text_Syn, aes(x = -Inf, y = -Inf, label = slope),
-      #                         x=max(plotdata$Xvariable),
-      #                         y=min(plotdata$Synchrony), size=5,
-      #                         hjust=1, vjust=0.1)+
-      #               theme(strip.text = element_text(size=13), legend.title = element_text(size=13),
-      #                     legend.text = element_text(size=12), legend.key.size = unit(0.8, 'cm'),
-      #                     axis.title = element_text(size=16))
-
-
-    }else{
-
-      plotout1 <- ggplot(plotdata_Stab, aes(x=Xvariable, y=Stability))+
-                      geom_point(size=2.7)+
-                      geom_line(aes(x=Xvariable, y=pred, linetype = sign), linewidth=1.2, color="black")+
-                      scale_linetype_manual(values=c("solid","dashed"), drop = FALSE)+
-                      facet_grid(type~Order_q, scales = "free_y")+
-                      labs(linetype="")+
-                      xlab(label=x_variable)+
-                      ylab(label="Stability and Synchrony")+ theme_bw()+
-                      geom_text(data=slope_text_Stab, aes(x = -Inf, y = -Inf, label = slope),
-                                x=max(plotdata_Stab$Xvariable, na.rm = TRUE),
-                                y=rep(c(tyG, tyA, tyBA, tyS),each=2), size=5,
-                                hjust=1, vjust=rep(c(0.1,0.1,1.1,0.1),each=2))+
-                      theme(strip.text = element_text(size=13), legend.title = element_text(size=13),
-                            legend.text = element_text(size=12), legend.key.size = unit(0.8, 'cm'),
-                            axis.title = element_text(size=16))+
-                      guides(linetype = guide_legend(keywidth = 2.5))
-
-      # plotout2 <- ggplot(plotdata, aes(x=Xvariable, y=Synchrony))+
-      #                 geom_point(size=2.7)+
-      #                 geom_line(aes(x=Xvariable, y=pred_S, linetype = sign_S), linewidth=1.2, color="black")+
-      #                 scale_linetype_manual(values=c("solid","dashed"), drop = FALSE)+
-      #                 facet_wrap(.~Order_q, scales = "fixed")+
-      #                 labs(linetype="")+
-      #                 xlab(label=x_variable)+
-      #                 ylab(label="Synchrony")+ theme_bw()+
-      #                 geom_text(data=slope_text_Syn, aes(x = -Inf, y = -Inf, label = slope),
-      #                           x=max(plotdata$Xvariable),
-      #                           y=min(plotdata$Synchrony), size=5,
-      #                           hjust=1, vjust=0.1)+
-      #                 theme(strip.text = element_text(size=13), legend.title = element_text(size=13),
-      #                       legend.text = element_text(size=12), legend.key.size = unit(0.8, 'cm'),
-      #                       axis.title = element_text(size=16))
-
+      
+      plotout1 <- ggplot2::ggplot() +
+        ggplot2::geom_point(data = plotdata_Stab,
+                            ggplot2::aes(x = Xvariable, y = Stability, color = Gvariable), size = 2.7) +
+        ggplot2::geom_segment(data = part_fit,
+                              ggplot2::aes(x = x_min, xend = x_max,
+                                           y = intercept + slope * x_min,
+                                           yend = intercept + slope * x_max,
+                                           color = Gvariable)) +
+        ggplot2::geom_line(data = plotdata_Stab,
+                           ggplot2::aes(x = Xvariable, y = pred, linetype = sign),
+                           linewidth = 1.2, color = "black") +
+        ggplot2::scale_linetype_manual(values = c("solid", "dashed"), drop = FALSE) +
+        ggplot2::scale_color_manual(values = cbPalette) +
+        ggplot2::facet_grid(type ~ Order_q, scales = "free_y") +
+        ggplot2::labs(linetype = "", color = by_group) +
+        ggplot2::xlab(x_variable) + ggplot2::ylab("Stability and Synchrony") +
+        ggplot2::theme_bw() +
+        # slope_text_Stab：y 向量長度 = 4 * Q，與資料列數一致；hjust/vjust 用常數
+        ggplot2::geom_text(data = slope_text_Stab,
+                           ggplot2::aes(x = -Inf, y = -Inf, label = slope),
+                           x = max(plotdata_Stab$Xvariable, na.rm = TRUE),
+                           y = rep(c(tyG, tyA, tyBA, tyS), each = Q),
+                           size = 3.5, hjust = 1, vjust = -3.5) +
+        # plotdata_text_part：y 長度 = gnum * Q * 4；hjust/vjust 用常數
+        ggplot2::geom_text(data = plotdata_text_part,
+                           ggplot2::aes(x = -Inf, y = -Inf, label = slope, color = Gvariable),
+                           x = rep(max(plotdata_Stab$Xvariable, na.rm = TRUE), gnum * 4 * Q),
+                           y = rep(c(tyG, tyA, tyBA, tyS), each = gnum * Q),
+                           size = 3.5, hjust = 2.1, vjust = -1.7,
+                           key_glyph = ggplot2::draw_key_path) +
+        ggplot2::theme(
+          strip.text   = ggplot2::element_text(size = 13),
+          legend.title = ggplot2::element_text(size = 13),
+          legend.text  = ggplot2::element_text(size = 12),
+          legend.key.size = grid::unit(0.8, "cm"),
+          axis.title   = ggplot2::element_text(size = 16)
+        ) +
+        ggplot2::guides(linetype = ggplot2::guide_legend(keywidth = 2.5))
+      
+    } else {
+      
+      plotout1 <- ggplot2::ggplot(plotdata_Stab, ggplot2::aes(x = Xvariable, y = Stability)) +
+        ggplot2::geom_point(size = 2.7) +
+        ggplot2::geom_line(ggplot2::aes(x = Xvariable, y = pred, linetype = sign),
+                           linewidth = 1.2, color = "black") +
+        ggplot2::scale_linetype_manual(values = c("solid", "dashed"), drop = FALSE) +
+        ggplot2::facet_grid(type ~ Order_q, scales = "free_y") +
+        ggplot2::labs(linetype = "") +
+        ggplot2::xlab(x_variable) + ggplot2::ylab("Stability and Synchrony") +
+        ggplot2::theme_bw() +
+        ggplot2::geom_text(data = slope_text_Stab,
+                           ggplot2::aes(x = -Inf, y = -Inf, label = slope),
+                           x = max(plotdata_Stab$Xvariable, na.rm = TRUE),
+                           y = rep(c(tyG, tyA, tyBA, tyS), each = Q),
+                           size = 5, hjust = 1, vjust = c(0.1, 0.1, 1.1, 0.1)) +
+        ggplot2::theme(
+          strip.text   = ggplot2::element_text(size = 13),
+          legend.title = ggplot2::element_text(size = 13),
+          legend.text  = ggplot2::element_text(size = 12),
+          legend.key.size = grid::unit(0.8, "cm"),
+          axis.title   = ggplot2::element_text(size = 16)
+        ) +
+        ggplot2::guides(linetype = ggplot2::guide_legend(keywidth = 2.5))
     }
+    
     plotout <- plotout1
-    # plotout[[1]] <- plotout1
-    # plotout[[2]] <- plotout2
   }
-
+  
   return(plotout)
 }
 
@@ -1446,7 +1272,7 @@ ggStay_analysis <- function(output, x_variable, by_group=NULL, model="LMM"){
 ggplotColors <- function(g){
   d <- 360/g # Calculate the distance between colors in HCL color space
   h <- cumsum(c(15, rep(d,g - 1))) # Create cumulative sums to define hue values
-  hcl(h = h, c = 100, l = 65) # Convert HCL values to hexadecimal color codes
+  grDevices::hcl(h = h, c = 100, l = 65) # Convert HCL values to hexadecimal color codes
 }
 
 

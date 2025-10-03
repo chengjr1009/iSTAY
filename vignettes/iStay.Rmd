@@ -7,14 +7,29 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(collapse = TRUE, comment = "#>", 
-                      fig.retina = 2,
-                      fig.align = 'center',
-                      fig.width = 6, fig.height = 3,
-                      warning = FALSE, message = FALSE)
-options("width" = 200, digits = 3)
+```{r global-options, include=FALSE}
+if (requireNamespace("knitr", quietly = TRUE)) {
+  kc <- get("opts_chunk", envir = asNamespace("knitr"))
+  kc$set(
+    collapse   = TRUE,
+    comment    = "#>",
+    fig.retina = 2,
+    fig.align  = "center",
+    fig.width  = 6,
+    fig.height = 3,
+    warning    = FALSE,
+    message    = FALSE
+  )
+} else {
+  warning("Package 'knitr' not available; vignette chunk options not set.")
+}
+options(width = 200, digits = 3)
+
+paste0 <- base::paste0
+paste  <- base::paste
+
 ```
+
 
 ```{r setup}
 library(iStay)
@@ -507,6 +522,10 @@ hierplot[[2]]
 
 
 ## References
+
+Anne Chao, Robert K. Colwell, Johnny Shia. (2025)
+A continuum of information-based temporal stability measures and their decomposition across hierarchical level.
+doi:https://doi.org/10.1101/2025.08.20.671203
 
 Roscher C. Schumacher, J., Baade, J. et al. (2004)
 The role of biodiversity for element cycling and trophic interactions: an experimental approach in a grassland community Basic and Applied Ecology, 5, 107-121. https://doi.org/10.1078/1439-1791-00216

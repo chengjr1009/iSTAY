@@ -2,7 +2,7 @@
 % Please edit documentation in R/Main_Function.R
 \name{Stay_Single}
 \alias{Stay_Single}
-\title{Calculate stability of the time series data for single assemblage.}
+\title{Calculate stability of time-series data for a single assemblage.}
 \usage{
 Stay_Single(
   data,
@@ -27,7 +27,7 @@ Stay_Single(
 a dataframe with columns "Plot/Community", "Order_q" and "Stability".
 }
 \description{
-\code{Stay_Single} is a function that calculate stability of the time series data (like biomass, productivity, etc.) for single assemblage.
+\code{Stay_Single} is a function that computes the stability of time-series data (e.g., biomass, productivity) for a single assemblage.
 }
 \examples{
 # Stability of each single plot

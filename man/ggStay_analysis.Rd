@@ -31,54 +31,51 @@ data("Jena_hierarchical_mat")
 ## Single assemblage
 # Stability of each single plot
 single_plot <- do.call(rbind, Jena_plot_biomass_data)
-output_single_plot_div <- Stay_Single(data = single_plot, order.q = c(1,2), Alltime = TRUE)
+output_single_plot_div <- Stay_Single(data=single_plot, order.q=c(1,2), Alltime=TRUE)
 output_single_plot_div <- data.frame(output_single_plot_div,
-                                     log2_sowndiv = log2(as.numeric(do.call(rbind, 
-                                     strsplit(output_single_plot_div[,1],"[._]+"))[,2])),
-                                     block = do.call(rbind,
-                                     strsplit(output_single_plot_div[,1],"[._]+"))[,1])
+                                     sowndiv=as.numeric(do.call(rbind,
+                                       strsplit(output_single_plot_div[,1],"[._]+"))[,2]),
+                                     block=do.call(rbind,
+                                       strsplit(output_single_plot_div[,1],"[._]+"))[,1])
 
-ggStay_analysis(output=output_single_plot_div, x_variable="log2_sowndiv",
-                    by_group = "block", model = "LMM")
+ggStay_analysis(output=output_single_plot_div, x_variable="sowndiv",
+                    by_group="block", model="LMM")
 
 # Stability of each single species
 single_species <- do.call(rbind, Jena_species_biomass_data)
-output_single_species_div <- Stay_Single(data = single_species,
-                                         order.q = c(1,2), Alltime = TRUE)
+output_single_species_div <- Stay_Single(data=single_species,
+                                         order.q=c(1,2), Alltime=TRUE)
 output_single_species_div <- data.frame(output_single_species_div,
-                              log2_sowndiv = log2(as.numeric(do.call(rbind, 
-                              strsplit(output_single_species_div[,1],"[._]+"))[,3])),
-                              block=do.call(rbind, 
-                              strsplit(output_single_species_div[,1],"[._]+"))[,2])
+                              sowndiv=as.numeric(do.call(rbind,
+                                      strsplit(output_single_species_div[,1],"[._]+"))[,3]),
+                              block=do.call(rbind,
+                                    strsplit(output_single_species_div[,1],"[._]+"))[,2])
 
-ggStay_analysis(output = output_single_species_div, x_variable = "log2_sowndiv",
-                by_group = "block", model = "LMM")
+ggStay_analysis(output=output_single_species_div, x_variable="sowndiv",
+                    by_group="block", model="LMM")
 
 
 ## Multiple assemblages
 # Stability of multiple plots
 multiple_plot <- Jena_plot_biomass_data
-output_multi_plot_div <- Stay_Multiple(data = multiple_plot, order.q = c(1,2), Alltime = TRUE)
-output_multi_plot_div <- data.frame(output_multi_plot_div,
-                               log2_sowndiv = log2(as.numeric(do.call(rbind, 
-                               strsplit(output_multi_plot_div[, 1], "_"))[, 2])),
-                               block = do.call(rbind, 
-                               strsplit(output_multi_plot_div[, 1], "_"))[, 1])
+output_multi_plot_div <- Stay_Multiple(data=multiple_plot, order.q=c(1,2), Alltime=TRUE)
+output_multi_plot_div <- data.frame(output_multi_plot_div, sowndiv=rep(c(16,8,4,2,1),8),
+                                    block=rep(rep(c("B1","B2","B3","B4"),each=5),2))
 
-ggStay_analysis(output = output_multi_plot_div, x_variable= "log2_sowndiv",
-                by_group = "block", model = "LMM")
+ggStay_analysis(output=output_multi_plot_div, x_variable="sowndiv",
+                    by_group="block", model="LMM")
 
 # Stability of multiple species in plot
 multiple_species <- Jena_species_biomass_data
-output_multi_species_div <- Stay_Multiple(data = multiple_species,
-                                              order.q = c(1,2), Alltime = TRUE)
+output_multi_species_div <- Stay_Multiple(data=multiple_species,
+                                              order.q=c(1,2), Alltime=TRUE)
 output_multi_species_div <- data.frame(output_multi_species_div,
-                             log2_sowndiv = log2(as.numeric(do.call(rbind,
-                                     strsplit(output_multi_species_div[,1],"_"))[,3])),
+                             sowndiv=as.numeric(do.call(rbind,
+                                     strsplit(output_multi_species_div[,1],"_"))[,3]),
                              block=do.call(rbind,
                                    strsplit(output_multi_species_div[,1],"_"))[,2])
 
-ggStay_analysis(output = output_multi_species_div, x_variable = "log2_sowndiv",
-                    by_group = "block", model = "LMM")
+ggStay_analysis(output=output_multi_species_div, x_variable="sowndiv",
+                    by_group="block", model="LMM")
 
 }

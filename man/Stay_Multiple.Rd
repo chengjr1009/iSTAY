@@ -2,7 +2,7 @@
 % Please edit documentation in R/Main_Function.R
 \name{Stay_Multiple}
 \alias{Stay_Multiple}
-\title{Calculate stability and synchrony of the time series data for multiple assemblages.}
+\title{Calculate stability and synchrony of time-series data for multiple assemblages.}
 \usage{
 Stay_Multiple(
   data,
@@ -27,7 +27,7 @@ Stay_Multiple(
 a dataframe with columns "Site", "Order_q", "Gamma", "Alpha", "Beta" and "Synchrony".
 }
 \description{
-\code{Stay_Multiple} is a function that calculate (Gamma, Alpha and Beta) stability and synchrony of the time series data (like biomass, productivity, etc.) for multiple assemblages.
+\code{Stay_Multiple} is a function that computes gamma, alpha, and beta stability, as well as synchrony, for time-series data (e.g., biomass, productivity) across multiple assemblages.
 }
 \examples{
 # Stability of multiple plots
