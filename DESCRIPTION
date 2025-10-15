@@ -1,8 +1,8 @@
 Package: iStay
 Type: Package
-Title: Measuring ecological stability and synchrony
+Title: Information-based stability and synchrony measures
 Version: 1.0.0
-Date: 2025-10-03
+Date: 2025-10-15
 Author: Anne Chao [aut, cre]
 Maintainer: Anne Chao <chao@stat.nthu.edu.tw>
 Authors@R:
@@ -19,12 +19,17 @@ Authors@R:
            role = "aut",
            email = "johnny70426@gmail.com")
   )
-Description: Provides functions to (i) compute order-q stability for a single assemblage, 
-          (ii) compute order-q stability and synchrony for multiple assemblages, and 
-          (iii) assess stability in hierarchical data. Additional utilities are included 
-          to visualize stability or synchrony profiles, and to analyze and plot relationships 
-          between stability (or synchrony) and diversity or other explanatory variables.
-           See Chao et al. (2025) <doi:https://doi.org/10.1101/2025.08.20.671203> for more details.
+Description: Provides functions to to compute a continuum 
+        of information-based measures for quantifying the 
+        temporal stability of populations, communities, and 
+        ecosystems, as well as their associated synchrony, 
+        based on species (or species assemblage) biomass or 
+        other key variables. When biodiversity data are available, 
+        the spackage also enables the assessment of the corresponding 
+        diversity–stability relationships. All measures are 
+        applicable in both temporal and spatial contexts. The 
+        theoretical and methodological background is detailed in Chao 
+        et al. (2025)  <doi:https://doi.org/10.1101/2025.08.20.671203> for more details.
 License: GPL (>= 3)
 Imports: ggplot2 (>= 3.5.0),
          stringr,

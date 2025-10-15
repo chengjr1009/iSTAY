@@ -1,40 +1,44 @@
 
 utils::globalVariables(c(
-  "Alpha", "Gamma", "Gvariable", "Hier", "Plot/Community", "Xvariable",
+  "Alpha", "Gamma", "Gvariable", "Hier", "Dataset", "Xvariable",
   "coef", "intercept", "lm", "pred", "slope",
   "type", "value", "x_max", "x_min"
 ))
 
-#' Calculate stability of time-series data for a single assemblage.
+#' Calculate stability for a single time series.
 #'
-#' \code{Stay_Single} is a function that computes the stability of time-series data (e.g., biomass, productivity) for a single assemblage.
+#' \code{iSTAY_Single} computes the stability of order q for a single time series.
 #'
-#' @param data can be input as a \code{vector} of time series data, or \code{data.frame} (assemblages by times).
+#' @param data A \code{vector} of time series data, or a \code{data.frame} with sampling units as rows and time points as columns.
 #' @param order.q a numerical vector specifying the orders of stability. Default is c(1,2).
-#' @param Alltime \code{TRUE} or \code{FALSE}, to decide whether to use all the times in the data.
-#' @param start_T (argument only for \code{Alltime = FALSE}) a positive integer specifying the start column of time in the data.
-#' @param end_T (argument only for \code{Alltime = FALSE}) a positive integer specifying the end column of time in the data.
+#' @param Alltime Logical (\code{TRUE} or \code{FALSE}), indicating whether to use all time points in the data.
+#' @param start_T (Applicable only if \code{Alltime = FALSE}) a positive integer specifying the starting column (time point) for the analysis interval.
+#' @param end_T (Applicable only if \code{Alltime = FALSE}) a positive integer specifying the ending column (time point) for the analysis interval.
 #'
 #'
 #'
-#' @return a dataframe with columns "Plot/Community", "Order_q" and "Stability".
+#' @return a dataframe with columns: \cr
+#' Dataset--the input dataset \cr
+#' Order_q--order of stability \cr
+#' Stability--stability measures of order q
+#'
 #'
 #' @examples
-#' # Stability of each single plot
-#' data("Jena_plot_biomass_data")
-#' single_plot <- do.call(rbind, Jena_plot_biomass_data)
-#' output_single_plot <- Stay_Single(data=single_plot, order.q=c(1,2), Alltime=TRUE)
-#' output_single_plot
+#' # Compute the stability of individual plots
+#' data("Data_Jena_20_metacommunities")
+#' individual_plots <- do.call(rbind, Data_Jena_20_metacommunities)
+#' output_individual_plots <- iSTAY_Single(data = individual_plots, order.q=c(1,2), Alltime = TRUE)
+#' output_individual_plots
 #'
-#' # Stability of each single species in each plot
-#' data("Jena_species_biomass_data")
-#' single_species <- do.call(rbind, Jena_species_biomass_data)
-#' output_single_species <- Stay_Single(data=single_species, order.q=c(1,2), Alltime=TRUE)
-#' output_single_species
+#' # Compute the stability of individual populations
+#' data("Data_Jena_76_metapopulations")
+#' individual_populations <- do.call(rbind, Data_Jena_76_metapopulations)
+#' output_individual_populations <- iSTAY_Single(data = individual_populations, order.q = c(1,2), Alltime = TRUE)
+#' output_individual_populations
 #'
 #' @export
 
-Stay_Single <- function (data, order.q = c(1, 2), Alltime = TRUE, start_T = NULL, end_T = NULL){
+iSTAY_Single <- function (data, order.q = c(1, 2), Alltime = TRUE, start_T = NULL, end_T = NULL){
   if (is.vector(data)) {
     data <- matrix(data, nrow = 1)
   }
@@ -80,7 +84,7 @@ Stay_Single <- function (data, order.q = c(1, 2), Alltime = TRUE, start_T = NULL
   result <- data.frame(Assemblage = rep(rownames(as.data.frame(data)), length(order.q)), 
                        Order_q = rep(order.q, each = nrow(data)), 
                        Stability = as.vector(t(stab)))
-  colnames(result)[1] <- c("Plot/Community")
+  colnames(result)[1] <- c("Dataset")
   return(result)
 }
 
@@ -88,36 +92,40 @@ Stay_Single <- function (data, order.q = c(1, 2), Alltime = TRUE, start_T = NULL
 
 
 
-#' Calculate stability and synchrony of time-series data for multiple assemblages.
+#' Calculate stability and synchrony for multiple time series.
 #'
-#' \code{Stay_Multiple} is a function that computes gamma, alpha, and beta stability, as well as synchrony, for time-series data (e.g., biomass, productivity) across multiple assemblages.
+#' \code{iSTAY_Multiple} computes gamma, alpha, and beta stability, as well as synchrony, for multiple time-series data.
 #'
-#' @param data can be input as a \code{data.frame/matrix} (assemblages by times), or a \code{list} of \code{data.frames} with each dataframe representing a assemblages-by-times data.
-#' @param order.q a numerical vector specifying the orders of stability and synchrony. Default is c(1,2).
-#' @param Alltime \code{TRUE} or \code{FALSE}, to decide whether to use all the times in (every) dataframe.
-#' @param start_T (argument only for \code{Alltime = FALSE}) a positive integer specifying the start column of time in (every) dataframe.
-#' @param end_T (argument only for \code{Alltime = FALSE}) a positive integer specifying the end column of time in (every) dataframe.
+#' @param data A \code{data.frame} containing multiple time series data, with sampling units as rows and time points as columns, or a \code{list} of \code{data.frames} with each data frame representing multiple time series.
+#' @param order.q A numerical vector specifying the orders of stability and synchrony. Default is c(1,2).
+#' @param Alltime Logical (\code{TRUE} or \code{FALSE}), indicating whether to use all time points in the data.
+#' @param start_T (Applicable only if \code{Alltime = FALSE}) a positive integer specifying the starting column (time point) for the analysis interval.
+#' @param end_T (Applicable only if \code{Alltime = FALSE}) a positive integer specifying the ending column (time point) for the analysis interval.
 #'
 #'
-#' @return a dataframe with columns "Site", "Order_q", "Gamma", "Alpha", "Beta" and "Synchrony".
+#' @return a data frame with the following columns: \cr
+#'  Dataset--the input dataset \cr
+#'  Order_q--order of stability or synchrony \cr
+#'  Gamma, Alpha, Beta--stability measures of order q \cr 
+#'  Synchrony--synchrony measure of order q
 #'
 #' @examples
-#' # Stability of multiple plots
-#' data("Jena_plot_biomass_data")
-#' multiple_plot <- Jena_plot_biomass_data
-#' output_multi_plot <- Stay_Multiple(data=multiple_plot, order.q=c(1,2), Alltime=TRUE)
-#' output_multi_plot
+#' # Stability of multiple time series
+#' data("Data_Jena_20_metacommunities")
+#' metacommunities <- Data_Jena_20_metacommunities
+#' output_metacommunities <- iSTAY_Multiple(data = metacommunities, order.q = c(1,2), Alltime = TRUE)
+#' output_metacommunities
 #'
-#' # Stability of multiple species in each plot
-#' data("Jena_species_biomass_data")
-#' multiple_species <- Jena_species_biomass_data
-#' output_multi_species <- Stay_Multiple(data=multiple_species, order.q=c(1,2), Alltime=TRUE)
-#' output_multi_species
+#' # Stability of metapopulations
+#' data("Data_Jena_76_metapopulations")
+#' metapopulations <- Data_Jena_76_metapopulations
+#' output_metapopulations <- iSTAY_Multiple(data = multiple_species, order.q = c(1,2), Alltime = TRUE)
+#' output_metapopulations
 #'
 #'
 #' @export
 
-Stay_Multiple <- function (data, order.q = c(1, 2), Alltime = TRUE, start_T = NULL, end_T = NULL){
+iSTAY_Multiple <- function (data, order.q = c(1, 2), Alltime = TRUE, start_T = NULL, end_T = NULL){
   NA_num <- sum(is.na(data))
   if (NA_num != 0) {
     stop("There are some NA in the data.")
@@ -240,37 +248,41 @@ Stay_Multiple <- function (data, order.q = c(1, 2), Alltime = TRUE, start_T = NU
     })
     result <- do.call(rbind, out)
   }
-  colnames(result) <- c("Site", "Order_q", "Gamma", "Alpha", "Beta", "Synchrony")
+  colnames(result) <- c("Dataset", "Order_q", "Gamma", "Alpha", "Beta", "Synchrony")
   return(result)
 }
 
-#' Calculate stability of time-series data for hierarchical structure.
+#' Calculate stability and synchrony at each hierarchical level
 #'
-#' \code{Stay_Hier} is a function that computes gamma, alpha, and normalized beta stability for time-series data (e.g., biomass, productivity) within hierarchical structures.
+#' \code{iSTAY_Hier} computes gamma, alpha, and beta stability, as well as synchrony, at each hierarchical level for time series of biomass or other variables.
 #'
-#' @param data can be input as \code{data.frame} (assemblages by times).
-#' @param mat hierarchical structure of data.
-#' @param order.q a numerical vector specifying the orders of stability. Default is c(1,2).
-#' @param Alltime \code{TRUE} or \code{FALSE}, to decide whether to use all the times in the data.
-#' @param start_T (argument only for \code{Alltime = FALSE}) a positive integer specifying the start column of time in the data.
-#' @param end_T (argument only for \code{Alltime = FALSE}) a positive integer specifying the end column of time in the data.
+#' @param data A \code{data.frame} containing the hierarchical data, with sampling units as rows and time points as columns.
+#' @param structure The hierarchical structure of the input data.
+#' @param order.q A numerical vector specifying the orders of stability. Default is c(1,2).
+#' @param Alltime Logical (\code{TRUE} or \code{FALSE}), indicating whether to use all time points in the data.
+#' @param start_T (Applicable only if \code{Alltime = FALSE}) a positive integer specifying the starting column (time point) for the analysis interval.
+#' @param end_T (Applicable only if \code{Alltime = FALSE}) a positive integer specifying the ending column (time point) for the analysis interval.
 #'
 #' @import dplyr
 #'
-#' @return a dataframe with columns "Hier", "Order_q", and stability "Gamma", "Alpha", "Beta" and "Synchrony".
+#' @return a data frame with the following columns: \cr
+#'  Hier_level--hierarchical level(e.g. Level 1: population, Level 2: community, Level 3: block, and level 4: overall data)) \cr
+#'  Order_q--order of stability or synchrony \cr
+#'  Gamma, Alpha, Beta--stability measures of order q \cr
+#'  Synchrony--synchrony measure of order q
 #'
 #' @examples
 #'
-#' data("Jena_hierarchical_biomass_data")
-#' data("Jena_hierarchical_mat")
-#' output_hier <- Stay_Hier(data=Jena_hierarchical_biomass_data, mat=Jena_hierarchical_mat,
+#' data("Data_Jena_462_populations")
+#' data("Data_Jena_hierarchical_structure")
+#' output_hier <- iSTAY_Hier(data=Data_Jena_462_populations, mat=Data_Jena_hierarchical_structure,
 #'                          order.q=c(1,2), Alltime=TRUE)
 #' output_hier
 #'
 #'
 #' @export
 
-Stay_Hier <- function (data, mat, order.q = c(1, 2), Alltime = TRUE, start_T = NULL, end_T = NULL){
+iSTAY_Hier <- function (data, structure, order.q = c(1, 2), Alltime = TRUE, start_T = NULL, end_T = NULL){
   if (Alltime == FALSE) {
     data <- data[, start_T:end_T]
   }
@@ -278,7 +290,7 @@ Stay_Hier <- function (data, mat, order.q = c(1, 2), Alltime = TRUE, start_T = N
   del <- which(apply(data, 1, sum) == 0)
   if (length(del) != 0) {
     data <- data[-del, ]
-    mat <- mat[-del, ]
+    structure <- structure[-del, ]
   }
   data <- as.matrix(data)
   
@@ -306,14 +318,14 @@ Stay_Hier <- function (data, mat, order.q = c(1, 2), Alltime = TRUE, start_T = N
     }
   }
   
-  nStruc <- ncol(mat) + 1
+  nStruc <- ncol(structure) + 1
   
-  for (h in 1:(ncol(mat) - 1)) {
-    J <- unique(mat[, h])
+  for (h in 1:(ncol(structure) - 1)) {
+    J <- unique(structure[, h])
     NJ <- length(J)
     MJ <- matrix(0, NJ, TT)
     for (j in 1 : NJ) {
-      JJ <- which(mat[, h] == J[j])
+      JJ <- which(structure[, h] == J[j])
       if(length(JJ) == 1) {MJ[j, ] <- data[JJ, ]}
       else{MJ[j, ] <- colSums(data[JJ, ])} 
     }
@@ -339,11 +351,11 @@ Stay_Hier <- function (data, mat, order.q = c(1, 2), Alltime = TRUE, start_T = N
   # Highiest Level Synchrony
   beta <- out[,2] - out[,3]
   
-  J <- unique(mat[, 1])
+  J <- unique(structure[, 1])
   NJ <- length(J)
   MJ <- matrix(0, NJ, TT)
   for (j in 1 : NJ) {
-    JJ <- which(mat[, 1] == J[j])
+    JJ <- which(structure[, 1] == J[j])
     if(length(JJ) == 1) {MJ[j, ] <- data[JJ, ]}
     else{MJ[j, ] <- colSums(data[JJ, ])} 
   }
@@ -374,14 +386,14 @@ Stay_Hier <- function (data, mat, order.q = c(1, 2), Alltime = TRUE, start_T = N
   
   out <- cbind(out, 1 - beta / beta_max)
   
-  for (h in 2 : (ncol(mat))) {
+  for (h in 2 : (ncol(structure))) {
     beta <- out[, (h + 1)] - out[, (h + 2)]
     
-    K <- unique(mat[, h - 1])
+    K <- unique(structure[, h - 1])
     NK <- length(K)
     MK <- matrix(0, NK, TT)
     for (k in 1 : NK) {
-      KK <- which(mat[, h - 1] == K[k])
+      KK <- which(structure[, h - 1] == K[k])
       if(length(KK) == 1) {MK[k,] <- data[KK,]}
       else{MK[k,] <- colSums(data[KK,])} 
     }
@@ -389,7 +401,7 @@ Stay_Hier <- function (data, mat, order.q = c(1, 2), Alltime = TRUE, start_T = N
     wk.temp <- rep(0, nrow(data))
     nk.temp <- rep(0, nrow(data))
     for (k in 1:NK) {
-      KK <- which(mat[, h - 1] == K[k])
+      KK <- which(structure[, h - 1] == K[k])
       wk.temp[KK] <- rowSums(MK)[k] / N
       nk.temp[KK] <- rowSums(MK)[k]
     }
@@ -400,7 +412,7 @@ Stay_Hier <- function (data, mat, order.q = c(1, 2), Alltime = TRUE, start_T = N
     wk <- rep(0, NJ)
     nk <- rep(0, NJ)
     for (j in 1 : NJ) {
-      JJ <- which(mat[, h] == J[j])
+      JJ <- which(structure[, h] == J[j])
       
       if(length(JJ) == 1) {
         MJ[j,] <- data[JJ,]
@@ -446,74 +458,74 @@ Stay_Hier <- function (data, mat, order.q = c(1, 2), Alltime = TRUE, start_T = N
   
   colnames(out) <- c("Order.q" ,"S_gamma", paste0("S_alpha",(nStruc - 1) : 1), paste0("Synchrony", (nStruc-1):1))
   
-  return(data.frame(Hier = rep(nStruc : 1, each = length(order.q)),
+  return(data.frame(Hier_level = rep(nStruc : 1, each = length(order.q)),
                     Order_q = rep(order.q, nStruc),
                     Gamma = c(out[, 2], out[, 2 : nStruc] |> unlist()),
                     Alpha = c(rep(NA, length(order.q)), out[, 3 : (nStruc + 1)] |> unlist()),
                     Synchrony = c(rep(NA, length(order.q)), out[, (nStruc + 2) : (nStruc * 2)] |> unlist())) |>
-           mutate(Beta = Gamma - Alpha, .before = Synchrony))
+           dplyr::mutate(Beta = Gamma - Alpha, .before = Synchrony))
   
 }
 
 
 
-#' ggplot2 extension for a Stay_Single, Stay_Multiple or Stay_Hier object with q-profile.
+#' ggplot2 extension for plotting stability and synchrony profiles.
 #'
-#' \code{ggStay_qprofile} is a graphical function that based on the output from the function \code{Stay_Single}, \code{Stay_Multiple} or \code{Stay_Hier}. It provides to graph the q-profile of stability (and synchrony if is multiple assemblages).
+#' \code{ggiSTAY_qprofile} is a graphical function based on the output from the function \code{iSTAY_Single}, \code{iSTAY_Multiple} or \code{iSTAY_Hier}. It generates stability (and synchrony, if multiple time series are included) profiles that depict how stability and synchrony vary with the order q > 0.
 #'
-#' @param output the output obtained from \code{Stay_Single}, \code{Stay_Multiple} or \code{Stay_Hier}.
+#' @param output the output obtained from \code{iSTAY_Single}, \code{iSTAY_Multiple} or \code{iSTAY_Hier}.
 #'
 #' @import ggpubr
 #'
 #'
-#' @return For a \code{Stay_Single} object, this function return a figure of q-profile for stability .
-#' For a \code{Stay_Multiple} object, this function return a figure that contains q-profile for (Gamma, Alpha, Beta) stability and synchrony.
-#' For a \code{Stay_Hier} object, this function return a figure that contains q-profile for gamma stability of highest hierarchical level and alpha stability of other hierarchical level. And it also provides a figure about the relationship between each decomposition of overall stability and the synchrony of each hierarchical level and order.q.
+#' @return For an \code{iSTAY_Single} object, this function return a figure showing the stability profile.\cr
+#' For an \code{iSTAY_Multiple} object, it returns a figure displaying the profiles for gamma, alpha, and beta stability, as well as synchrony.\cr
+#' For an \code{iSTAY_Hier} object, it returns a figure displaying the profiles for gamma, alpha, and beta stability, as well as synchrony.
 #'
 #'
 #' @examples
-#' data("Jena_plot_biomass_data")
-#' data("Jena_species_biomass_data")
-#' data("Jena_hierarchical_biomass_data")
-#' data("Jena_hierarchical_mat")
+#' data("Data_Jena_20_metacommunities")
+#' data("Data_Jena_76_metapopulations")
+#' data("Data_Jena_462_populations")
+#' data("Data_Jena_hierarchical_structure")
 #'
-#' ## Single assemblage
-#' # Stability of each single plot
-#' single_plot <- do.call(rbind, Jena_plot_biomass_data)
-#' output_single_plot_q <- Stay_Single(data=single_plot[c(12,38),],
-#'                                     order.q=seq(0.1,2,0.1), Alltime=TRUE)
-#' ggStay_qprofile(output=output_single_plot_q)
+#' ## Single time series analysis
+#' # Plot the stability profiles of two selected plots
+#' individual_plots <- do.call(rbind, Data_Jena_20_metacommunities)
+#' output_individual_plots_q <- iSTAY_Single(data = individual_plots[which(rownames(individual_plots) %in% c("B1_4.B1A04", "B4_2.B4A14")),],
+#'                                     order.q = seq(0.1,2,0.1), Alltime = TRUE)
+#' ggiSTAY_qprofile(output = output_individual_plots_q)
 #'
-#' # Stability of each single species
-#' single_species <- do.call(rbind, Jena_species_biomass_data)
-#' output_single_species_q <- Stay_Single(data=single_species[c(40,49),],
-#'                                        order.q=seq(0.1,2,0.1), Alltime=TRUE)
-#' ggStay_qprofile(output=output_single_species_q)
-#'
-#'
-#' ## Multiple assemblages
-#' # Stability of multiple plots
-#' multiple_plot <- Jena_plot_biomass_data
-#' output_multi_plot_q <- Stay_Multiple(data=multiple_plot[c(9,11)],
-#'                                          order.q=seq(0.1,2,0.1), Alltime=TRUE)
-#' ggStay_qprofile(output=output_multi_plot_q)
-#'
-#' # Stability of multiple species in plot
-#' multiple_species <- Jena_species_biomass_data
-#' output_multi_species_q <- Stay_Multiple(data=multiple_species[c(62,70)],
-#'                                             order.q=seq(0.1,2,0.1), Alltime=TRUE)
-#' ggStay_qprofile(output=output_multi_species_q)
+#' # Plot the stability profiles of two selected populations
+#' individual_populations <- do.call(rbind, Data_Jena_76_metapopulations)
+#' output_individual_populations_q <- iSTAY_Single(data = individual_populations[which(rownames(individual_populations) %in% c("B1A06_B1_16.BM_Ant.odo", "B1A06_B1_16.BM_Cam.pat")),],
+#'                                        order.q = seq(0.1,2,0.1), Alltime = TRUE)
+#' ggiSTAY_qprofile(output = output_individual_populations_q)
 #'
 #'
-#' ## Hierarchies
-#' output_hier_q <- Stay_Hier(data=Jena_hierarchical_biomass_data,
-#'                            mat=Jena_hierarchical_mat,
-#'                            order.q=seq(0.1,2,0.1), Alltime=TRUE)
-#' ggStay_qprofile(output=output_hier_q)
+#' ## Multiple time series analysis
+#' # Plot the gamma, alpha and beta stability profiles, as well as synchrony profiles of two selected metacommunities
+#' metacommunities <- Data_Jena_20_metacommunities
+#' output_metacommunities_q <- iSTAY_Multiple(data = metacommunities[which(names(metacommunities) %in% c("B1_1",  "B3_2"))],
+#'                                          order.q = seq(0.1,2,0.1), Alltime = TRUE)
+#' ggiSTAY_qprofile(output = output_metacommunities_q)
+#'
+#' # Plot the gamma, alpha and beta stability profiles, as well as synchrony profiles of two selected metapopulations
+#' metapopulations <- Data_Jena_76_metapopulations
+#' output_metapopulations_q <- iSTAY_Multiple(data = metapopulations[which(names(metapopulations) %in% c("B1A04_B1_4", "B4A14_B4_2"))],
+#'                                             order.q = seq(0.1,2,0.1), Alltime = TRUE)
+#' ggiSTAY_qprofile(output = output_metapopulations_q)
+#'
+#'
+#' ## Hierarchical time series analysis
+#' output_hier_q <- iSTAY_Hier(data = Data_Jena_462_populations,
+#'                            structure = Data_Jena_hierarchical_structure,
+#'                            order.q = seq(0.1,2,0.1), Alltime = TRUE)
+#' ggiSTAY_qprofile(output = output_hier_q)
 #'
 #' @export
 
-ggStay_qprofile <- function(output){
+ggiSTAY_qprofile <- function(output){
   
   # local helper: safe color generator (no extra deps)
   ggplotColors <- function(n) {
@@ -521,30 +533,30 @@ ggStay_qprofile <- function(output){
   }
   
   if (length(which(colnames(output) == "Stability")) != 0) {
-    if (length(which(colnames(output) == "Plot/Community")) == 0 ||
+    if (length(which(colnames(output) == "Dataset")) == 0 ||
         length(which(colnames(output) == "Order_q")) == 0) {
-      stop('Please put the complete output of "Stay_Single", "Stay_Multiple" or "Stay_Hier" function.')
+      stop('Please put the complete output of "iSTAY_Single", "iSTAY_Multiple" or "iSTAY_Hier" function.')
     } else {
       outtype <- "single"
     }
-  } else if (length(which(colnames(output) == "Hier")) != 0) {
+  } else if (length(which(colnames(output) == "Hier_level")) != 0) {
     if (length(which(colnames(output) == "Order_q")) == 0 ||
         length(which(colnames(output) == "Gamma")) == 0 ||
         length(which(colnames(output) == "Alpha")) == 0 ||
         length(which(colnames(output) == "Beta")) == 0 ||
         length(which(colnames(output) == "Synchrony")) == 0) {
-      stop('Please put the complete output of "Stay_Single", "Stay_Multiple" or "Stay_Hier" function.')
+      stop('Please put the complete output of "iSTAY_Single", "iSTAY_Multiple" or "iSTAY_Hier" function.')
     } else {
       outtype <- "hier"
     }
   } else {
-    if (length(which(colnames(output) == "Site")) == 0 ||
+    if (length(which(colnames(output) == "Dataset")) == 0 ||
         length(which(colnames(output) == "Order_q")) == 0 ||
         length(which(colnames(output) == "Gamma")) == 0 ||
         length(which(colnames(output) == "Alpha")) == 0 ||
         length(which(colnames(output) == "Beta")) == 0 ||
         length(which(colnames(output) == "Synchrony")) == 0) {
-      stop('Please put the complete output of "Stay_Single", "Stay_Multiple" or "Stay_Hier" function.')
+      stop('Please put the complete output of "iSTAY_Single", "iSTAY_Multiple" or "iSTAY_Hier" function.')
     } else {
       outtype <- "multiple"
     }
@@ -552,24 +564,24 @@ ggStay_qprofile <- function(output){
   
   if (outtype == "single") {
     
-    if (length(unique(output$`Plot/Community`)) <= 4) {
+    if (length(unique(output$`Dataset`)) <= 4) {
       cbPalette <- c("#EA0000","#0066CC","#64A600","#fb8500")
     } else {
       cbPalette <- c(c("#EA0000","#0066CC","#64A600","#fb8500"),
-                     ggplotColors(length(unique(output$`Plot/Community`)) - 4))
+                     ggplotColors(length(unique(output$`Dataset`)) - 4))
     }
     
-    output$`Plot/Community` <- factor(output$`Plot/Community`,
-                                      levels = unique(output$`Plot/Community`))
+    output$`Dataset` <- factor(output$`Dataset`,
+                                      levels = unique(output$`Dataset`))
     
     plotout <- ggplot2::ggplot(
       data = output,
-      mapping = ggplot2::aes(x = Order_q, y = Stability, color = `Plot/Community`)
+      mapping = ggplot2::aes(x = Order_q, y = Stability, color = `Dataset`)
     ) +
       ggplot2::geom_line(linewidth = 1.2) +
       ggplot2::ylab("Stability") +
       ggplot2::xlab("Order of q") +
-      ggplot2::labs(color = "Plot/Community") +
+      ggplot2::labs(color = "Dataset") +
       ggplot2::theme_bw() +
       ggplot2::scale_colour_manual(values = cbPalette) +
       ggplot2::theme(
@@ -581,8 +593,8 @@ ggStay_qprofile <- function(output){
     
   } else if (outtype == "hier") {
     
-    maxhier  <- max(output$Hier)
-    hier_num <- unique(output$Hier)
+    maxhier  <- max(output$Hier_level)
+    hier_num <- unique(output$Hier_level)
     qq       <- unique(output$Order_q)
     type_name   <- c(paste0("Gamma(", maxhier, ")"),
                      paste0("Alpha(", hier_num[-1], ")"))
@@ -591,23 +603,23 @@ ggStay_qprofile <- function(output){
     
     plotdat1 <- data.frame(
       Order_q  = rep(qq, length(hier_num)),
-      Stability = c(dplyr::filter(output, Hier == maxhier)$Gamma,
-                    dplyr::filter(output, Hier != maxhier)$Alpha),
+      Stability = c(dplyr::filter(output, Hier_level == maxhier)$Gamma,
+                    dplyr::filter(output, Hier_level != maxhier)$Alpha),
       type = rep(type_name, each = length(qq))
     )
     plotdat1$type <- factor(plotdat1$type, levels = type_name)
     
     plotdat2 <- data.frame(
       Order_q  = rep(qq, (length(hier_num) - 1)),
-      Synchrony = dplyr::filter(output, Hier != maxhier)$Synchrony,
+      Synchrony = dplyr::filter(output, Hier_level != maxhier)$Synchrony,
       type = rep(type_diff, each = length(qq))
     )
     plotdat2$type <- factor(plotdat2$type, levels = type_diff)
     
     plotdat2_2 <- data.frame(
       Order_q  = rep(qq, length(hier_num)),
-      Stability = c(dplyr::filter(output, Hier != maxhier)$Beta,
-                    dplyr::filter(output, Hier == 1)$Alpha),
+      Stability = c(dplyr::filter(output, Hier_level != maxhier)$Beta,
+                    dplyr::filter(output, Hier_level == 1)$Alpha),
       type = rep(type_name2_2, each = length(qq))
     )
     plotdat2_2$type <- factor(plotdat2_2$type, levels = type_name2_2)
@@ -674,29 +686,29 @@ ggStay_qprofile <- function(output){
     
   } else {  # multiple
     
-    output$Site <- factor(output$Site, levels = unique(output$Site))
+    output$Dataset <- factor(output$Dataset, levels = unique(output$Dataset))
     
     stab_plotdat <- data.frame(
-      Site    = rep(output$Site, 4),
+      Dataset    = rep(output$Dataset, 4),
       Order_q = rep(output$Order_q, 4),
       value   = c(output$Gamma, output$Alpha, output$Beta, output$Synchrony),
       type    = rep(c("Gamma", "Alpha", "Beta", "Synchrony"), each = nrow(output))
     )
     stab_plotdat$type <- factor(stab_plotdat$type, levels = c("Gamma","Alpha","Beta","Synchrony"))
     
-    if (length(unique(stab_plotdat$Site)) <= 4) {
+    if (length(unique(stab_plotdat$Dataset)) <= 4) {
       cbPalette <- c("#EA0000","#0066CC","#64A600","#fb8500")
     } else {
       cbPalette <- c(c("#EA0000","#0066CC","#64A600","#fb8500"),
-                     ggplotColors(length(unique(stab_plotdat$Site)) - 4))
+                     ggplotColors(length(unique(stab_plotdat$Dataset)) - 4))
     }
     
-    plotout <- ggplot2::ggplot(stab_plotdat, ggplot2::aes(x = Order_q, y = value, color = Site)) +
+    plotout <- ggplot2::ggplot(stab_plotdat, ggplot2::aes(x = Order_q, y = value, color = Dataset)) +
       ggplot2::geom_line(linewidth = 1.2) +
       ggplot2::facet_wrap(~ type, nrow = 2, scales = "free") +
       ggplot2::ylab("Stability and Synchrony") +
       ggplot2::xlab("Order of q") +
-      ggplot2::labs(color = "Site") +
+      ggplot2::labs(color = "Dataset") +
       ggplot2::theme_bw() +
       ggplot2::scale_color_manual(values = cbPalette) +
       ggplot2::theme(
@@ -713,14 +725,14 @@ ggStay_qprofile <- function(output){
 
 
 
-#' ggplot2 extension for a Stay_Single or Stay_Multiple object to analysis with an diversity (or other) variable.
+#' ggplot2 extension for plotting diversity–stability and diversity–synchrony relationships.
 #'
-#' \code{ggStay_analysis} is a graphical function that based on the output from the function \code{Stay_Single} or \code{Stay_Multiple}. It provides to graph relationships between stability (and synchrony if is multiple assemblages) and an additional diversity (or other) variable .
+#' \code{ggiSTAY_analysis} is a graphical function based on the output from the functions \code{iSTAY_Single} or \code{iSTAY_Multiple}. It generates plots showing the relationships between stability (and synchrony if multiple time series are included) and an additional variable, such as diversity or another relevant factor.
 #'
-#' @param output the output obtained from \code{Stay_Single} or \code{Stay_Multiple} and needs to combine with a column that sets as \code{x_variable}. Also, if \code{by_group} is not \code{NULL}, the output also need to combine with the column that sets as \code{by_group}.
-#' @param x_variable name of the column of diversity (or other) variable, that will use as the x-axis in the plot.
-#' @param by_group name of the column that is a categorical variable for plotting points with different color. And it is required if \code{model = "LMM"}, model uses it as random effect for intercept and slope. Default is \code{NULL}.
-#' @param model specifying the fitting model, \code{model = "lm"} for linear model; \code{model = "LMM"} for linear mixed model with random effects for intercept and slope. Default is \code{model = "LMM"}.
+#' @param output The output obtained from \code{iSTAY_Single} or \code{iSTAY_Multiple}. It must include (or be combined with) a column corresponding to the variable specified in \code{x_variable}. If \code{by_group} is not \code{NULL},  must also include a column corresponding the variable specified in \code{by_group}.
+#' @param x_variable The name of the column representing the diversity (or other) variable to be used as the x-axis in the plot.
+#' @param by_group The name of the column representing a categorical variable used to color points by group. The argument is required if \code{model = "LMM"},  as the model uses it as random effect for both intercept and slope. Default is \code{NULL}.
+#' @param model Specifies the fitting model. Use \code{model = "lm"} for a linear model; or \code{model = "LMM"} for a linear mixed model with random effects for both intercept and slope. Default is \code{model = "LMM"}.
 #'
 #'
 #' @import stringr
@@ -728,68 +740,68 @@ ggStay_qprofile <- function(output){
 #' @import dplyr
 #'
 #'
-#' @return For an \code{Stay_Single} object, this function return a figure of diversity (or other) variable vs. stability.
-#' For an \code{Stay_Multiple} object, this function return a figure that is about diversity (or other) variable vs. (Gamma, Alpha, Beta) stability and synchrony.
+#' @return For an \code{iSTAY_Single} object, this function return a figure showing the relationship between the diversity (or other) variable and stability. \cr
+#' For an \code{iSTAY_Multiple} object, this function returns a figure showing the diversity (or other) variable and gamma, alpha, and beta stability, as well as synchrony.
 #'
 #' @examples
-#' data("Jena_plot_biomass_data")
-#' data("Jena_species_biomass_data")
-#' data("Jena_hierarchical_biomass_data")
-#' data("Jena_hierarchical_mat")
+#' data("Data_Jena_20_metacommunities")
+#' data("Data_Jena_76_metapopulations")
+#' data("Data_Jena_462_populations")
+#' data("Data_Jena_hierarchical_structure")
 #'
-#' ## Single assemblage
-#' # Stability of each single plot
-#' single_plot <- do.call(rbind, Jena_plot_biomass_data)
-#' output_single_plot_div <- Stay_Single(data=single_plot, order.q=c(1,2), Alltime=TRUE)
-#' output_single_plot_div <- data.frame(output_single_plot_div,
-#'                                      sowndiv=as.numeric(do.call(rbind,
-#'                                        strsplit(output_single_plot_div[,1],"[._]+"))[,2]),
-#'                                      block=do.call(rbind,
-#'                                        strsplit(output_single_plot_div[,1],"[._]+"))[,1])
+#' ## Single time series analysis
+#' # Analyze the stability of individual plots and diversity-stability relationship
+#' individual_plots <- do.call(rbind, Data_Jena_20_metacommunities)
+#' output_individual_plots_div <- iSTAY_Single(data=individual_plots, order.q=c(1,2), Alltime=TRUE)
+#' output_individual_plots_div <- data.frame(output_individual_plots_div,
+#'                                      log2_sowndiv = log2(as.numeric(do.call(rbind,
+#'                                        strsplit(output_individual_plots_div[,1],"[._]+"))[,2])),
+#'                                      block = do.call(rbind,
+#'                                        strsplit(output_individual_plots_div[,1],"[._]+"))[,1])
 #'
-#' ggStay_analysis(output=output_single_plot_div, x_variable="sowndiv",
+#' ggiSTAY_analysis(output = output_individual_plots_div, x_variable = "log2_sowndiv",
 #'                     by_group="block", model="LMM")
 #'
-#' # Stability of each single species
-#' single_species <- do.call(rbind, Jena_species_biomass_data)
-#' output_single_species_div <- Stay_Single(data=single_species,
+#' # Analyze the stability of individual populations and diversity-stability relationships
+#' individual_populations <- do.call(rbind, Data_Jena_76_metapopulations)
+#' output_individual_populations_div <- iSTAY_Single(data = individual_populations,
 #'                                          order.q=c(1,2), Alltime=TRUE)
-#' output_single_species_div <- data.frame(output_single_species_div,
-#'                               sowndiv=as.numeric(do.call(rbind,
-#'                                       strsplit(output_single_species_div[,1],"[._]+"))[,3]),
+#' output_individual_populations_div <- data.frame(output_individual_populations_div,
+#'                               log2_sowndiv = log2(as.numeric(do.call(rbind,
+#'                                       strsplit(output_individual_populations_div[,1],"[._]+"))[,3])),
 #'                               block=do.call(rbind,
-#'                                     strsplit(output_single_species_div[,1],"[._]+"))[,2])
+#'                                     strsplit(output_individual_populations_div[,1],"[._]+"))[,2])
 #'
-#' ggStay_analysis(output=output_single_species_div, x_variable="sowndiv",
-#'                     by_group="block", model="LMM")
+#' ggiSTAY_analysis(output = output_individual_populations_div, x_variable = "log2_sowndiv",
+#'                     by_group = "block", model = "LMM")
 #'
 #'
-#' ## Multiple assemblages
-#' # Stability of multiple plots
-#' multiple_plot <- Jena_plot_biomass_data
-#' output_multi_plot_div <- Stay_Multiple(data=multiple_plot, order.q=c(1,2), Alltime=TRUE)
-#' output_multi_plot_div <- data.frame(output_multi_plot_div, sowndiv=rep(c(16,8,4,2,1),8),
-#'                                     block=rep(rep(c("B1","B2","B3","B4"),each=5),2))
+#' ## Multiple time series analysis
+#' # Analyze the stability and synchrony within each metacommunity and their relationships with diversity
+#' metacommunities <- Data_Jena_20_metacommunities
+#' output_metacommunities_div <- iSTAY_Multiple(data = metacommunities, order.q = c(1,2), Alltime = TRUE)
+#' output_metacommunities_div <- data.frame(output_metacommunities_div, 
+#'                                     log2_sowndiv = log2(as.numeric(do.call(rbind, strsplit(output_metacommunities_div[, 1], "_"))[, 2])),
+#'                                     block = do.call(rbind, strsplit(output_metacommunities_div[, 1], "_"))[, 1])
 #'
-#' ggStay_analysis(output=output_multi_plot_div, x_variable="sowndiv",
-#'                     by_group="block", model="LMM")
+#' ggiSTAY_analysis(output = output_metacommunities_div, x_variable = "log2_sowndiv",
+#'                     by_group = "block", model = "LMM")
 #'
-#' # Stability of multiple species in plot
-#' multiple_species <- Jena_species_biomass_data
-#' output_multi_species_div <- Stay_Multiple(data=multiple_species,
+#' # Analyze the stability and synchrony within each metapopulation and their relationships with diversity
+#' metapopulations <- Data_Jena_76_metapopulations
+#' output_metapopulations_div <- iSTAY_Multiple(data = metapopulations,
 #'                                               order.q=c(1,2), Alltime=TRUE)
-#' output_multi_species_div <- data.frame(output_multi_species_div,
-#'                              sowndiv=as.numeric(do.call(rbind,
-#'                                      strsplit(output_multi_species_div[,1],"_"))[,3]),
-#'                              block=do.call(rbind,
-#'                                    strsplit(output_multi_species_div[,1],"_"))[,2])
+#' output_metapopulations_div <- data.frame(output_metapopulations_div,
+#'                              log2_sowndiv = log2(as.numeric(do.call(rbind,
+#'                              strsplit(output_metapopulations_div[,1],"[._]+"))[,3])),
+#'                              block = do.call(rbind, strsplit(output_metapopulations_div[,1],"_"))[,2])
 #'
-#' ggStay_analysis(output=output_multi_species_div, x_variable="sowndiv",
-#'                     by_group="block", model="LMM")
+#' ggiSTAY_analysis(output = output_metapopulations_div, x_variable = "log2_sowndiv",
+#'                     by_group = "block", model = "LMM")
 #'
 #' @export
 
-ggStay_analysis <- function(output, x_variable, by_group = NULL, model = "LMM") {
+ggiSTAY_analysis <- function(output, x_variable, by_group=NULL, model="LMM"){ 
   
   # local helper: safe color generator
   ggplotColors <- function(n) {
@@ -797,52 +809,44 @@ ggStay_analysis <- function(output, x_variable, by_group = NULL, model = "LMM") 
   }
   
   ## --- Basic checks ---------------------------------------------------------
-  if (length(which(colnames(output) == "Stability")) != 0) {
-    if ((length(which(colnames(output) == "Plot/Community")) == 0 &&
-         length(which(colnames(output) == "Plot.Community")) == 0) ||
-        length(which(colnames(output) == "Order_q")) == 0) {
-      stop('Please put the complete output of "Stay_Single" or "Stay_Multiple" function.')
-    }
-  } else {
-    if (length(which(colnames(output) == "Site")) == 0 ||
-        length(which(colnames(output) == "Order_q")) == 0 ||
-        length(which(colnames(output) == "Gamma")) == 0 ||
-        length(which(colnames(output) == "Alpha")) == 0 ||
-        length(which(colnames(output) == "Beta")) == 0  ||
-        length(which(colnames(output) == "Synchrony")) == 0) {
-      stop('Please put the complete output of "Stay_Single" or "Stay_Multiple" function.')
-    }
-  }
   
-  if (length(which(colnames(output) == x_variable)) == 0) {
-    stop('The output data need to combine a column setting as x_variable.')
-  } else {
-    colnames(output)[which(colnames(output) == x_variable)] <- "Xvariable"
+  if(length(which(colnames(output)=="Stability"))!=0){ 
+    if((length(which(colnames(output)=="Dataset"))==0 ) | 
+       length(which(colnames(output)=="Order_q"))==0){ 
+      stop('Please put the complete output of "iSTAY_Single" or "iSTAY_Multiple" function.') }
   }
+  else{ 
+    if(length(which(colnames(output)=="Dataset"))==0 | 
+       length(which(colnames(output)=="Order_q"))==0 | 
+       length(which(colnames(output)=="Gamma"))==0 | 
+       length(which(colnames(output)=="Alpha"))==0 | 
+       length(which(colnames(output)=="Beta"))==0 | 
+       length(which(colnames(output)=="Synchrony"))==0){ 
+      stop('Please put the complete output of "iSTAY_Single" or "iSTAY_Multiple" function.') } 
+  } 
+  if(length(which(colnames(output)==x_variable))==0){ 
+    stop('The output data need to combine a column setting as x_variable.') }
+  else{ colnames(output)[which(colnames(output)==x_variable)] <- c("Xvariable") } 
+  if(is.null(by_group)==FALSE){ if(length(which(colnames(output)==by_group))==0){ 
+    stop('The output data need to combine a column setting as by_group.') }
+  else{ colnames(output)[which(colnames(output)==by_group)] <- c("Gvariable") } } 
+  if(model=="LMM"){ 
+    if(is.null(by_group)==TRUE){ 
+      stop('For linear mixed model, you need to set by_group variable as random effect.') } } 
+  if(is.null(by_group)==FALSE){ output$Gvariable <- as.factor(output$Gvariable) } 
   
-  if (!is.null(by_group)) {
-    if (length(which(colnames(output) == by_group)) == 0) {
-      stop('The output data need to combine a column setting as by_group.')
-    } else {
-      colnames(output)[which(colnames(output) == by_group)] <- "Gvariable"
-    }
-  }
-  if (identical(model, "LMM") && is.null(by_group)) {
-    stop('For linear mixed model, you need to set by_group variable as random effect.')
-  }
-  
-  if (!is.null(by_group)) output$Gvariable <- as.factor(output$Gvariable)
-  
-  ## ========================================================================
-  ## A) Single 
-  ## ========================================================================
-  if (length(which(colnames(output) == "Stability")) != 0) {
+
+  ## Single ------------------------------------------------------------------
+
+
+  if(length(which(colnames(output)=="Stability"))!=0){ 
     
-    lm_sign  <- c()
-    lm_slope <- c()
-    plotdata <- c()
-    part_fit <- c()
-    plotdata_text_part <- c()
+    # fit model 
+    lm_sign <-c() 
+    lm_slope <- c() 
+    plotdata <- c() 
+    part_fit <- c() 
+    plotdata_text_part <- c() 
     
     for (qq in unique(output$Order_q)) {
       subdata <- dplyr::filter(output, Order_q == qq)
@@ -888,32 +892,45 @@ ggStay_analysis <- function(output, x_variable, by_group = NULL, model = "LMM") 
       plotdata <- rbind(plotdata, data.frame(subdata, pred = pred_value))
     }
     
-    lm_sign            <- as.data.frame(lm_sign)
-    lm_slope           <- as.data.frame(lm_slope)
-    rownames(lm_sign)  <- paste0("q = ", unique(output$Order_q))
-    rownames(lm_slope) <- paste0("q = ", unique(output$Order_q))
+    lm_sign <- as.data.frame(lm_sign) 
+    lm_slope <- as.data.frame(lm_slope) 
+    rownames(lm_sign) <- paste("q = ", unique(output$Order_q), sep="") 
+    rownames(lm_slope) <- paste("q = ", unique(output$Order_q), sep="") 
     
-    plotdata$Order_q <- paste0("q = ", plotdata$Order_q)
-    plotdata$sign <- sapply(plotdata$Order_q, function(yy) lm_sign[which(rownames(lm_sign) == yy), 1])
-    plotdata$sign <- factor(plotdata$sign, levels = c("significant", "non-significant"))
-    slope_text <- data.frame(slope = paste0("slope = ", round(lm_slope[, 1], 4)),
-                             Order_q = rownames(lm_slope))
+    plotdata$Order_q <- paste("q = ", plotdata$Order_q, sep="") 
+    plotdata$sign <- sapply(plotdata$Order_q, function(yy){ 
+      sign <- lm_sign[which(rownames(lm_sign)==yy),1] 
+      return(sign) 
+    }) 
+    plotdata$sign <- factor(plotdata$sign, levels=c("significant", "non-significant")) 
+    slope_text <- data.frame(slope = paste("slope = ",round(lm_slope[,1],4),sep=""), 
+                             Order_q = rownames(lm_slope)) 
     
-    if (!any(plotdata$sign == "non-significant")) {
-      dummy <- plotdata[1, ]; dummy$Xvariable <- NA; dummy$pred <- NA; dummy$Stability <- NA; dummy$sign <- "non-significant"
-      plotdata <- rbind(plotdata, dummy)
-    }
-    if (!any(plotdata$sign == "significant")) {
-      dummy <- plotdata[1, ]; dummy$Xvariable <- NA; dummy$pred <- NA; dummy$Stability <- NA; dummy$sign <- "significant"
-      plotdata <- rbind(plotdata, dummy)
-    }
+    if(!any(plotdata$sign == "non-significant")) { 
+      dummy <- plotdata[1, ] 
+      dummy$Xvariable <- NA 
+      dummy$pred <- NA 
+      dummy$Stability <- NA 
+      dummy$sign <- "non-significant" 
+      plotdata <- rbind(plotdata, dummy) 
+    } 
+    if(!any(plotdata$sign == "significant")) { 
+      dummy <- plotdata[1, ] 
+      dummy$Xvariable <- NA 
+      dummy$pred <- NA 
+      dummy$Stability <- NA 
+      dummy$sign <- "significant" 
+      plotdata <- rbind(plotdata, dummy) 
+    } 
     
-    if (identical(model, "LMM")) {
-      plotdata_text_part$Order_q <- as.factor(plotdata_text_part$Order_q)
-      plotdata_text_part$Gvariable <- as.factor(plotdata_text_part$Gvariable)
-      part_fit$Order_q <- as.factor(part_fit$Order_q)
-      part_fit$Gvariable <- as.factor(part_fit$Gvariable)
-    }
+    if(model=="LMM"){ 
+      plotdata_text_part$Order_q <- as.factor(plotdata_text_part$Order_q) 
+      plotdata_text_part$Gvariable <- as.factor(plotdata_text_part$Gvariable) 
+      part_fit$Order_q <- as.factor(part_fit$Order_q) 
+      part_fit$Gvariable <- as.factor(part_fit$Gvariable) 
+    } 
+    
+    
     
     if (!is.null(by_group)) {
       # palette
@@ -923,6 +940,37 @@ ggStay_analysis <- function(output, x_variable, by_group = NULL, model = "LMM") 
         cbPalette <- c(c("#EA0000", "#64A600", "#0066CC", "#fb8500"),
                        ggplotColors(length(unique(plotdata$Gvariable)) - 4))
       }
+      
+      ### 0717 revise 
+      if(length(unique(plotdata$Gvariable)) == 4){ 
+        hhjust1 <- 1 
+        vvjust1 <- -3.5 
+        hhjust2 <- rep(c(2.1,1),4) 
+        vvjust2 <- rep(c(-1.7,-1.7,0.1,0.1),2) 
+      }
+      else{ 
+        gnum <- length(unique(plotdata$Gvariable)) 
+        if(gnum%%2==0){ create <- gnum/2 
+        }
+        else{ 
+          create <- (gnum + 1)/2 
+        }
+        hhjust1 <- 1 
+        vcreate <- 0.1+(-1.8)*c(create:0) 
+        vvjust1 <- vcreate[1] 
+        if(gnum%%2==1){ 
+          hhjust2 <- rep(c(2.1,1),create)[-length(rep(c(2.1,1),create))] 
+          hhjust2 <- rep(hhjust2,2) 
+          vvjust2 <- rep(vcreate[-1], each=2)[-length(rep(vcreate[-1], each=2))] 
+          vvjust2 <- rep(vvjust2, 2) 
+        }
+        else{ 
+          hhjust2 <- rep(rep(c(2.1,1),create),2) 
+          vvjust2 <- rep(rep(vcreate[-1], each=2),2) 
+        } 
+      } 
+      
+
       
       if (identical(model, "LMM")) {
         plotout <- ggplot2::ggplot() +
@@ -946,12 +994,12 @@ ggStay_analysis <- function(output, x_variable, by_group = NULL, model = "LMM") 
           ggplot2::geom_text(data = slope_text, ggplot2::aes(x = -Inf, y = -Inf, label = slope),
                              x = max(plotdata$Xvariable, na.rm = TRUE),
                              y = min(plotdata$Stability, na.rm = TRUE),
-                             size = 3.5, hjust = 1, vjust = -3.5) +
+                             size = 3.5, hjust=hhjust1, vjust=vvjust1) +
           ggplot2::geom_text(data = plotdata_text_part,
                              ggplot2::aes(x = -Inf, y = -Inf, label = slope, color = Gvariable),
                              x = max(plotdata$Xvariable, na.rm = TRUE),
                              y = min(plotdata$Stability, na.rm = TRUE),
-                             size = 3.5, hjust = 2.1, vjust = -1.7,
+                             size = 3.5, hjust=hhjust2, vjust=vvjust2,
                              key_glyph = ggplot2::draw_key_path) +
           ggplot2::theme(
             strip.text   = ggplot2::element_text(size = 13),
@@ -962,6 +1010,7 @@ ggStay_analysis <- function(output, x_variable, by_group = NULL, model = "LMM") 
           ) +
           ggplot2::guides(linetype = ggplot2::guide_legend(keywidth = 2.5))
       } else {
+        
         plotout <- ggplot2::ggplot() +
           ggplot2::geom_point(data = plotdata,
                               ggplot2::aes(x = Xvariable, y = Stability, color = Gvariable), size = 2.7) +
@@ -1012,18 +1061,16 @@ ggStay_analysis <- function(output, x_variable, by_group = NULL, model = "LMM") 
           axis.title   = ggplot2::element_text(size = 16)
         ) +
         ggplot2::guides(linetype = ggplot2::guide_legend(keywidth = 2.5))
-    }
+    } 
+  }
+  else{ 
     
-    ## ========================================================================
-    ## B) Multiple (Site) case
-    ## ========================================================================
-  } else {
-    
-    lm_sign  <- c()
-    lm_slope <- c()
-    plotdata <- c()
-    plotdata_text_part <- c()
-    part_fit <- c()
+    # fit model 
+    lm_sign <-c() 
+    lm_slope <- c() 
+    plotdata <- c() 
+    plotdata_text_part <- c() 
+    part_fit <- c() 
     
     for (qq in unique(output$Order_q)) {
       subdata <- dplyr::filter(output, Order_q == qq)
@@ -1087,168 +1134,266 @@ ggStay_analysis <- function(output, x_variable, by_group = NULL, model = "LMM") 
       )
       lm_slope <- rbind(
         lm_slope,
-        c(
-          gamma     = sum_gamma$coefficients[2,1],
+        c(gamma     = sum_gamma$coefficients[2,1],
           alpha     = sum_alpha$coefficients[2,1],
           beta_add  = sum_beta_add$coefficients[2,1],
-          synchrony = sum_syn$coefficients[2,1]
-        )
+          synchrony = sum_syn$coefficients[2,1])
       )
       plotdata <- rbind(plotdata,
-                        data.frame(subdata, pred_G = pred_G, pred_A = pred_A, pred_BA = pred_BA, pred_S = pred_S))
+                        data.frame(subdata, 
+                                   pred_G = pred_G, 
+                                   pred_A = pred_A, 
+                                   pred_BA = pred_BA, 
+                                   pred_S = pred_S)
+                        )
     }
     
-    lm_sign  <- as.data.frame(lm_sign)
-    lm_slope <- as.data.frame(lm_slope)
-    rownames(lm_sign)  <- paste0("q = ", unique(output$Order_q))
-    rownames(lm_slope) <- paste0("q = ", unique(output$Order_q))
     
-    plotdata$Order_q <- paste0("q = ", plotdata$Order_q)
-    plotdata$sign_G  <- sapply(plotdata$Order_q, function(yy) lm_sign[which(rownames(lm_sign) == yy), 1])
-    plotdata$sign_A  <- sapply(plotdata$Order_q, function(yy) lm_sign[which(rownames(lm_sign) == yy), 2])
-    plotdata$sign_BA <- sapply(plotdata$Order_q, function(yy) lm_sign[which(rownames(lm_sign) == yy), 3])
-    plotdata$sign_S  <- sapply(plotdata$Order_q, function(yy) lm_sign[which(rownames(lm_sign) == yy), 4])
+    lm_sign <- as.data.frame(lm_sign) 
+    lm_slope <- as.data.frame(lm_slope) 
+    rownames(lm_sign) <- paste("q = ", unique(output$Order_q), sep = "") 
+    rownames(lm_slope) <- paste("q = ", unique(output$Order_q), sep = "") 
     
-    plotdata_Stab <- data.frame(
-      Site     = rep(plotdata$Site, 4),
-      Order_q  = rep(plotdata$Order_q, 4),
-      Stability= c(plotdata$Gamma, plotdata$Alpha, plotdata$Beta, plotdata$Synchrony),
-      pred     = c(plotdata$pred_G, plotdata$pred_A, plotdata$pred_BA, plotdata$pred_S),
-      sign     = c(plotdata$sign_G, plotdata$sign_A, plotdata$sign_BA, plotdata$sign_S),
-      type     = rep(c("Gamma","Alpha","Beta","Synchrony"), each = nrow(plotdata)),
-      Xvariable= rep(plotdata$Xvariable, 4)
-    )
+    plotdata$Order_q <- paste("q = ", plotdata$Order_q, sep="") 
+    plotdata$sign_G <- sapply(plotdata$Order_q, function(yy){ 
+      lm_sign[which(rownames(lm_sign)==yy),1] }) 
+    plotdata$sign_A <- sapply(plotdata$Order_q, function(yy){ 
+      lm_sign[which(rownames(lm_sign)==yy),2] 
+    }) 
+    plotdata$sign_BA <- sapply(plotdata$Order_q, function(yy){ 
+      lm_sign[which(rownames(lm_sign)==yy),3] 
+    }) 
+    plotdata$sign_S <- sapply(plotdata$Order_q, function(yy){ 
+      lm_sign[which(rownames(lm_sign)==yy),4] 
+    }) 
     
-    if (!is.null(by_group)) {
-      plotdata_Stab$Gvariable <- as.factor(rep(plotdata$Gvariable, 4))
-      plotdata$Gvariable      <- as.factor(plotdata$Gvariable)
-    }
+    plotdata_Stab <- data.frame(Site = rep(plotdata$Site, 4), 
+                                Order_q = rep(plotdata$Order_q, 4), 
+                                Stability = c(plotdata$Gamma, 
+                                              plotdata$Alpha, 
+                                              plotdata$Beta, 
+                                              plotdata$Synchrony), 
+                                pred = c(plotdata$pred_G, plotdata$pred_A, 
+                                         plotdata$pred_BA, plotdata$pred_S), 
+                                sign = c(plotdata$sign_G, plotdata$sign_A, 
+                                         plotdata$sign_BA, plotdata$sign_S), 
+                                type = rep(c("Gamma","Alpha", "Beta","Synchrony"), 
+                                           each = nrow(plotdata)), 
+                                Xvariable = rep(plotdata$Xvariable, 4)
+    ) 
     
-    plotdata_Stab$sign    <- factor(plotdata_Stab$sign, levels = c("significant", "non-significant"))
-    plotdata_Stab$type    <- factor(plotdata_Stab$type, levels = c("Gamma","Alpha","Beta","Synchrony"))
-    plotdata_Stab$Order_q <- as.factor(plotdata_Stab$Order_q)
+    if(is.null(by_group)==FALSE){ 
+      
+      plotdata_Stab$Gvariable <- rep(plotdata$Gvariable,4) 
+      plotdata_Stab$Gvariable <- as.factor(plotdata_Stab$Gvariable) 
+      plotdata$Gvariable <- as.factor(plotdata$Gvariable) 
+      
+    } 
     
-    if (!any(plotdata_Stab$sign == "non-significant")) {
-      dummy <- plotdata_Stab[1, ]; dummy$Xvariable <- NA; dummy$pred <- NA; dummy$Stability <- NA; dummy$sign <- "non-significant"
-      plotdata_Stab <- rbind(plotdata_Stab, dummy)
-    }
-    if (!any(plotdata_Stab$sign == "significant")) {
-      dummy <- plotdata_Stab[1, ]; dummy$Xvariable <- NA; dummy$pred <- NA; dummy$Stability <- NA; dummy$sign <- "significant"
-      plotdata_Stab <- rbind(plotdata_Stab, dummy)
-    }
+    plotdata_Stab$sign <- factor(plotdata_Stab$sign, 
+                                 levels=c("significant", "non-significant")
+    ) 
+    plotdata_Stab$type <- factor(plotdata_Stab$type, 
+                                 levels = c("Gamma","Alpha","Beta","Synchrony")
+    ) 
+    plotdata_Stab$Order_q <- as.factor(plotdata_Stab$Order_q) 
     
-    slope_text_Stab <- data.frame(
-      slope   = paste0("slope = ", format(round(as.vector(as.matrix(lm_slope)), 4), nsmall = 4)),
-      Order_q = rep(rownames(lm_slope), 4),
-      type    = rep(c("Gamma","Alpha","Beta","Synchrony"), each = nrow(lm_slope))
-    )
-    slope_text_Stab$type    <- factor(slope_text_Stab$type, levels = c("Gamma","Alpha","Beta","Synchrony"))
-    slope_text_Stab$Order_q <- as.factor(slope_text_Stab$Order_q)
+    if(!any(plotdata_Stab$sign == "non-significant")) { 
+      dummy <- plotdata_Stab[1, ] 
+      dummy$Xvariable <- NA 
+      dummy$pred <- NA 
+      dummy$Stability <- NA 
+      dummy$sign <- "non-significant" 
+      plotdata_Stab <- rbind(plotdata_Stab, dummy) 
+    } 
+    if(!any(plotdata_Stab$sign == "significant")) { 
+      dummy <- plotdata_Stab[1, ] 
+      dummy$Xvariable <- NA 
+      dummy$pred <- NA 
+      dummy$Stability <- NA 
+      dummy$sign <- "significant" 
+      plotdata_Stab <- rbind(plotdata_Stab, dummy) 
+    } 
     
-    if (identical(model, "LMM")) {
-      plotdata_text_part <- data.frame(
-        slope    = c(plotdata_text_part$slope_gamma,
-                     plotdata_text_part$slope_alpha,
-                     plotdata_text_part$slope_beta,
-                     plotdata_text_part$slope_synchrony),
-        Order_q  = rep(plotdata_text_part$Order_q, 4),
-        type     = rep(c("Gamma","Alpha","Beta","Synchrony"), each = nrow(plotdata_text_part)),
-        Gvariable= rep(plotdata_text_part$Gvariable, 4)
-      )
-      plotdata_text_part$type     <- as.factor(plotdata_text_part$type)
-      plotdata_text_part$Order_q  <- as.factor(plotdata_text_part$Order_q)
-      plotdata_text_part$Gvariable<- as.factor(plotdata_text_part$Gvariable)
-      part_fit$Gvariable <- as.factor(part_fit$Gvariable)
-      part_fit$Order_q   <- as.factor(part_fit$Order_q)
-      part_fit$type      <- as.factor(part_fit$type)
-    }
+    slope_text_Stab <- data.frame(slope = paste("slope = ",format(round(as.vector(as.matrix(lm_slope)),4), 
+                                                                  nsmall=4),sep=""), 
+                                  Order_q = rep(rownames(lm_slope),4), 
+                                  type = rep(c("Gamma","Alpha","Beta","Synchrony"), 
+                                             each = nrow(lm_slope))
+    ) 
+    slope_text_Stab$type <- factor(slope_text_Stab$type, 
+                                   levels = c("Gamma","Alpha","Beta","Synchrony")
+    ) 
+    slope_text_Stab$Order_q <- as.factor(slope_text_Stab$Order_q) 
     
-    tyG <- min(dplyr::filter(plotdata_Stab, type == "Gamma")$Stability,     na.rm = TRUE)
-    tyA <- min(dplyr::filter(plotdata_Stab, type == "Alpha")$Stability,     na.rm = TRUE)
-    tyBA<- max(dplyr::filter(plotdata_Stab, type == "Beta")$Stability,      na.rm = TRUE)
-    tyS <- min(dplyr::filter(plotdata_Stab, type == "Synchrony")$Stability, na.rm = TRUE)
+    if(model=="LMM"){ 
+      plotdata_text_part <- data.frame(slope = c(plotdata_text_part$slope_gamma, 
+                                                 plotdata_text_part$slope_alpha, 
+                                                 plotdata_text_part$slope_beta, 
+                                                 plotdata_text_part$slope_synchrony), 
+                                       Order_q = rep(plotdata_text_part$Order_q, 4), 
+                                       type = rep(c("Gamma","Alpha","Beta","Synchrony"), 
+                                                  each=nrow(plotdata_text_part)
+                                       ), 
+                                       Gvariable = rep(plotdata_text_part$Gvariable, 4)
+                                       )
+      plotdata_text_part$type <- as.factor(plotdata_text_part$type) 
+      plotdata_text_part$Order_q <- as.factor(plotdata_text_part$Order_q) 
+      plotdata_text_part$Gvariable <- as.factor(plotdata_text_part$Gvariable) 
+      part_fit$Gvariable <- as.factor(part_fit$Gvariable) 
+      part_fit$Order_q <- as.factor(part_fit$Order_q) 
+      part_fit$type <- as.factor(part_fit$type) 
+    } 
+     
+    tyG <- min(dplyr::filter(plotdata_Stab, type=="Gamma")$Stability, na.rm = TRUE) 
+    tyA <- min(dplyr::filter(plotdata_Stab, type=="Alpha")$Stability, na.rm = TRUE) 
+    tyBA <- max(dplyr::filter(plotdata_Stab, type=="Beta")$Stability, na.rm = TRUE) 
+    tyS <- min(dplyr::filter(plotdata_Stab, type=="Synchrony")$Stability, na.rm = TRUE) 
     
-    Q    <- length(unique(plotdata_Stab$Order_q))
-    gnum <- if (!is.null(by_group)) length(unique(plotdata$Gvariable)) else 0
-    
-    if (!is.null(by_group)) {
-      if (length(unique(plotdata_Stab$Gvariable)) <= 4) {
-        cbPalette <- c("#EA0000", "#64A600", "#0066CC", "#fb8500")
-      } else {
-        cbPalette <- c(c("#EA0000", "#64A600", "#0066CC", "#fb8500"),
-                       ggplotColors(length(unique(plotdata_Stab$Gvariable)) - 4))
+    if(is.null(by_group)==FALSE){ 
+    # Check if the number of unique 'Assemblage' is 4 or less 
+      if (length(unique(plotdata_Stab$Gvariable)) <= 4){ 
+        cbPalette <- c("#EA0000","#64A600","#0066CC","#fb8500") 
       }
+      else{ 
+        # If there are more than 4 assemblages, start with the same predefined color palette 
+        # Then extend the palette by generating additional colors using the 'ggplotColors' function 
+        cbPalette <- c(c("#EA0000","#64A600","#0066CC","#fb8500"), 
+                       ggplotColors(length(unique(plotdata_Stab$Gvariable))-4)) 
+      }
+      if(length(unique(plotdata$Gvariable)) == 4){ 
+        gnum <- 4 
+        hhjust1 <- 1 
+        vvjust1 <- rep(c(-3.5,-3.5,4.1,-3.5), each=2) 
+        hhjust2 <- rep(c(2.1,1),16) 
+        vvjust2 <- c(rep(c(-1.7,-1.7,0.1,0.1),4), 
+                     rep(c(1.1,1.1,2.6,2.6),2), 
+                     rep(c(-1.7,-1.7,0.1,0.1),2)) 
+      }
+      else{ 
+        gnum <- length(unique(plotdata$Gvariable)) 
+        if(gnum%%2==0){ 
+          create <- gnum/2 
+        }
+        else{ 
+          create <- (gnum + 1)/2 
+        }
+        hhjust1 <- 1 
+        vcreate_1 <- 0.1+(-1.8)*c(create:0) 
+        vcreate_2 <- 1.1+1.5*c(create:0) 
+        vvjust1 <- rep(c(vcreate_1[1], vcreate_1[1], vcreate_2[1], vcreate_1[1]), each=2) 
+        if(gnum%%2==1){ 
+          hhjust2 <- rep(c(2.1,1),create)[-length(rep(c(2.1,1),create))] 
+          hhjust2 <- rep(hhjust2,8) 
+          vvjust2_1 <- rep(vcreate_1[-1], each=2)[-length(rep(vcreate_1[-1], each=2))] 
+          vvjust2_2 <- rev(rep(vcreate_2[-1], each=2))[-length(rev(rep(vcreate_2[-1], each=2)))] 
+          vvjust2 <- c(rep(vvjust2_1, 4), rep(vvjust2_2, 2), rep(vvjust2_1, 2)) 
+        }
+        else{ 
+          hhjust2 <- rep(rep(c(2.1,1),create),8) 
+          vvjust2 <- c(rep(rep(vcreate_1[-1], each=2),4), 
+                       rep(rep(rev(vcreate_2[-1]), each=2),2), 
+                       rep(rep(vcreate_1[-1], each=2),2)) 
+        } 
+      } 
+      if(model=="LMM"){ 
+        plotout1 <- ggplot2::ggplot() + 
+          ggplot2::geom_point(data = plotdata_Stab, 
+                              ggplot2::aes(x=Xvariable, y=Stability, color=Gvariable), size=2.7) + 
+          ggplot2::geom_segment(data = part_fit, 
+                                ggplot2::aes(x=x_min, xend=x_max, 
+                           y=intercept+slope*x_min, yend=intercept+slope*x_max, 
+                           color=Gvariable)) + 
+          ggplot2::geom_line(data = plotdata_Stab, 
+                             ggplot2::aes(x=Xvariable, y=pred, linetype = sign), 
+                    linewidth=1.2, color="black") + 
+          ggplot2::scale_linetype_manual(values=c("solid","dashed"), drop = FALSE) + 
+          ggplot2::scale_color_manual(values = cbPalette) + 
+          ggplot2::facet_grid(type~Order_q, scales = "free_y") + 
+          ggplot2::labs(linetype="", color=by_group) + 
+          ggplot2::xlab(label=x_variable) + 
+          ggplot2::ylab(label="Stability and Synchrony") + 
+          ggplot2::theme_bw() + 
+          ggplot2::geom_text(data=slope_text_Stab, 
+                             ggplot2::aes(x = -Inf, y = -Inf, label = slope), 
+                    x=max(plotdata_Stab$Xvariable, na.rm = TRUE), 
+                    y=rep(c(tyG, tyA, tyBA, tyS),each=2), 
+                    size=3.5, hjust=hhjust1, vjust=vvjust1
+          )+ 
+          ggplot2::geom_text(data=plotdata_text_part, 
+                             ggplot2::aes(x = -Inf, y = -Inf, label=slope, color=Gvariable), 
+                    x=rep(max(plotdata_Stab$Xvariable, na.rm = TRUE),gnum*8), 
+                    y=rep(c(tyG, tyA, tyBA, tyS),each=gnum*2), 
+                    size=3.5, hjust=hhjust2, vjust=vvjust2, 
+                    key_glyph = ggplot2::draw_key_path) + 
+          ggplot2::theme(strip.text = ggplot2::element_text(size=13), 
+                legend.title = ggplot2::element_text(size=13), 
+                legend.text = ggplot2::element_text(size=12), 
+                legend.key.size = grid::unit(0.8, 'cm'), 
+                axis.title = ggplot2::element_text(size=16)
+          ) + 
+          ggplot2::guides(linetype = ggplot2::guide_legend(keywidth = 2.5)) 
+      }
+      else{ 
+        plotout1 <- ggplot2::ggplot() + 
+          ggplot2::geom_point(data = plotdata_Stab, 
+                              ggplot2::aes(x=Xvariable, y=Stability, color=Gvariable), size=2.7) + 
+          ggplot2::geom_line(data = plotdata_Stab, 
+                             ggplot2::aes(x=Xvariable, y=pred, linetype = sign), 
+                    linewidth=1.2, color="black") + 
+          ggplot2::scale_linetype_manual(values=c("solid","dashed"), drop = FALSE) + 
+          ggplot2::scale_color_manual(values = cbPalette) + 
+          ggplot2::facet_grid(type~Order_q, scales = "free_y") + 
+          ggplot2::labs(linetype="", color=by_group) + 
+          ggplot2::xlab(label=x_variable) + 
+          ggplot2::ylab(label="Stability and Synchrony") + 
+          ggplot2::theme_bw() + 
+          ggplot2::geom_text(data=slope_text_Stab, 
+                             ggplot2::aes(x = -Inf, y = -Inf, label = slope), 
+                    x=max(plotdata_Stab$Xvariable, na.rm = TRUE), 
+                    y=rep(c(tyG, tyA, tyBA, tyS),each=2), 
+                    size=5, hjust=1, vjust=rep(c(0.1,0.1,1.1,0.1),each=2)) + 
+          ggplot2::theme(strip.text = ggplot2::element_text(size=13), 
+                legend.title = ggplot2::element_text(size=13), 
+                legend.text = ggplot2::element_text(size=12), 
+                legend.key.size = grid::unit(0.8, 'cm'), 
+                axis.title = ggplot2::element_text(size=16)
+          ) + 
+          ggplot2::guides(linetype = ggplot2::guide_legend(keywidth = 2.5)) 
+      } 
       
-      plotout1 <- ggplot2::ggplot() +
-        ggplot2::geom_point(data = plotdata_Stab,
-                            ggplot2::aes(x = Xvariable, y = Stability, color = Gvariable), size = 2.7) +
-        ggplot2::geom_segment(data = part_fit,
-                              ggplot2::aes(x = x_min, xend = x_max,
-                                           y = intercept + slope * x_min,
-                                           yend = intercept + slope * x_max,
-                                           color = Gvariable)) +
-        ggplot2::geom_line(data = plotdata_Stab,
-                           ggplot2::aes(x = Xvariable, y = pred, linetype = sign),
-                           linewidth = 1.2, color = "black") +
-        ggplot2::scale_linetype_manual(values = c("solid", "dashed"), drop = FALSE) +
-        ggplot2::scale_color_manual(values = cbPalette) +
-        ggplot2::facet_grid(type ~ Order_q, scales = "free_y") +
-        ggplot2::labs(linetype = "", color = by_group) +
-        ggplot2::xlab(x_variable) + ggplot2::ylab("Stability and Synchrony") +
-        ggplot2::theme_bw() +
-        # slope_text_Stab：y 向量長度 = 4 * Q，與資料列數一致；hjust/vjust 用常數
-        ggplot2::geom_text(data = slope_text_Stab,
-                           ggplot2::aes(x = -Inf, y = -Inf, label = slope),
-                           x = max(plotdata_Stab$Xvariable, na.rm = TRUE),
-                           y = rep(c(tyG, tyA, tyBA, tyS), each = Q),
-                           size = 3.5, hjust = 1, vjust = -3.5) +
-        # plotdata_text_part：y 長度 = gnum * Q * 4；hjust/vjust 用常數
-        ggplot2::geom_text(data = plotdata_text_part,
-                           ggplot2::aes(x = -Inf, y = -Inf, label = slope, color = Gvariable),
-                           x = rep(max(plotdata_Stab$Xvariable, na.rm = TRUE), gnum * 4 * Q),
-                           y = rep(c(tyG, tyA, tyBA, tyS), each = gnum * Q),
-                           size = 3.5, hjust = 2.1, vjust = -1.7,
-                           key_glyph = ggplot2::draw_key_path) +
-        ggplot2::theme(
-          strip.text   = ggplot2::element_text(size = 13),
-          legend.title = ggplot2::element_text(size = 13),
-          legend.text  = ggplot2::element_text(size = 12),
-          legend.key.size = grid::unit(0.8, "cm"),
-          axis.title   = ggplot2::element_text(size = 16)
-        ) +
-        ggplot2::guides(linetype = ggplot2::guide_legend(keywidth = 2.5))
-      
-    } else {
-      
-      plotout1 <- ggplot2::ggplot(plotdata_Stab, ggplot2::aes(x = Xvariable, y = Stability)) +
-        ggplot2::geom_point(size = 2.7) +
-        ggplot2::geom_line(ggplot2::aes(x = Xvariable, y = pred, linetype = sign),
-                           linewidth = 1.2, color = "black") +
-        ggplot2::scale_linetype_manual(values = c("solid", "dashed"), drop = FALSE) +
-        ggplot2::facet_grid(type ~ Order_q, scales = "free_y") +
-        ggplot2::labs(linetype = "") +
-        ggplot2::xlab(x_variable) + ggplot2::ylab("Stability and Synchrony") +
-        ggplot2::theme_bw() +
-        ggplot2::geom_text(data = slope_text_Stab,
-                           ggplot2::aes(x = -Inf, y = -Inf, label = slope),
-                           x = max(plotdata_Stab$Xvariable, na.rm = TRUE),
-                           y = rep(c(tyG, tyA, tyBA, tyS), each = Q),
-                           size = 5, hjust = 1, vjust = c(0.1, 0.1, 1.1, 0.1)) +
-        ggplot2::theme(
-          strip.text   = ggplot2::element_text(size = 13),
-          legend.title = ggplot2::element_text(size = 13),
-          legend.text  = ggplot2::element_text(size = 12),
-          legend.key.size = grid::unit(0.8, "cm"),
-          axis.title   = ggplot2::element_text(size = 16)
-        ) +
-        ggplot2::guides(linetype = ggplot2::guide_legend(keywidth = 2.5))
+    }
+    else{ 
+      plotout1 <- ggplot2::ggplot(plotdata_Stab, 
+                                  ggplot2::aes(x=Xvariable, y=Stability)) + 
+        ggplot2::geom_point(size=2.7) + 
+        ggplot2::geom_line(ggplot2::aes(x=Xvariable, y=pred, linetype = sign), 
+                  linewidth=1.2, color="black") + 
+        ggplot2::scale_linetype_manual(values=c("solid","dashed"), drop = FALSE) + 
+        ggplot2::facet_grid(type~Order_q, scales = "free_y") + 
+        ggplot2::labs(linetype="") + 
+        ggplot2::xlab(label = x_variable) + 
+        ggplot2::ylab(label = "Stability and Synchrony") + 
+        ggplot2::theme_bw() + 
+        ggplot2::geom_text(data=slope_text_Stab, 
+                           ggplot2::aes(x = -Inf, y = -Inf, label = slope), 
+                  x = max(plotdata_Stab$Xvariable, na.rm = TRUE), 
+                  y = rep(c(tyG, tyA, tyBA, tyS),each=2), 
+                  size=5, hjust=1, vjust=rep(c(0.1,0.1,1.1,0.1),each=2)) + 
+        ggplot2::theme(strip.text = ggplot2::element_text(size=13), 
+              legend.title = ggplot2::element_text(size=13), 
+              legend.text = ggplot2::element_text(size=12), 
+              legend.key.size = grid::unit(0.8, 'cm'), 
+              axis.title = ggplot2::element_text(size=16)) + 
+        ggplot2::guides(linetype = ggplot2::guide_legend(keywidth = 2.5)) 
     }
     
-    plotout <- plotout1
-  }
-  
-  return(plotout)
+    plotout <- plotout1 
+    
+  } 
+  return(plotout) 
 }
+
 
 
 
