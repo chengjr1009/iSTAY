@@ -60,7 +60,8 @@ ggiSTAY_analysis(output = output_individual_populations_div, x_variable = "log2_
 metacommunities <- Data_Jena_20_metacommunities
 output_metacommunities_div <- iSTAY_Multiple(data = metacommunities, order.q = c(1,2), Alltime = TRUE)
 output_metacommunities_div <- data.frame(output_metacommunities_div, 
-                                    log2_sowndiv = log2(as.numeric(do.call(rbind, strsplit(output_metacommunities_div[, 1], "_"))[, 2])),
+                                    log2_sowndiv = log2(as.numeric(do.call(rbind, 
+                                    strsplit(output_metacommunities_div[, 1], "_"))[, 2])),
                                     block = do.call(rbind, strsplit(output_metacommunities_div[, 1], "_"))[, 1])
 
 ggiSTAY_analysis(output = output_metacommunities_div, x_variable = "log2_sowndiv",

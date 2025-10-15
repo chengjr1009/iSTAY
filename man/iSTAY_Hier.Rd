@@ -40,7 +40,7 @@ a data frame with the following columns: \cr
 
 data("Data_Jena_462_populations")
 data("Data_Jena_hierarchical_structure")
-output_hier <- iSTAY_Hier(data=Data_Jena_462_populations, mat=Data_Jena_hierarchical_structure,
+output_hier <- iSTAY_Hier(data = Data_Jena_462_populations, structure = Data_Jena_hierarchical_structure,
                          order.q=c(1,2), Alltime=TRUE)
 output_hier
 
