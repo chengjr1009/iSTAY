@@ -34,7 +34,7 @@ paste  <- base::paste
 
 
 ```{r setup}
-library(iStay)
+library(iSTAY)
 ```
 
 <font color=#FF6600>
