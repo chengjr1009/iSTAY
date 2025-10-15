@@ -275,7 +275,7 @@ iSTAY_Multiple <- function (data, order.q = c(1, 2), Alltime = TRUE, start_T = N
 #'
 #' data("Data_Jena_462_populations")
 #' data("Data_Jena_hierarchical_structure")
-#' output_hier <- iSTAY_Hier(data=Data_Jena_462_populations, mat=Data_Jena_hierarchical_structure,
+#' output_hier <- iSTAY_Hier(data = Data_Jena_462_populations, structure = Data_Jena_hierarchical_structure,
 #'                          order.q=c(1,2), Alltime=TRUE)
 #' output_hier
 #'
@@ -406,7 +406,7 @@ iSTAY_Hier <- function (data, structure, order.q = c(1, 2), Alltime = TRUE, star
       nk.temp[KK] <- rowSums(MK)[k]
     }
     
-    J <- unique(mat[, h])
+    J <- unique(structure[, h])
     NJ <- length(J)
     MJ <- matrix(0, NJ, TT)
     wk <- rep(0, NJ)
@@ -1167,7 +1167,7 @@ ggiSTAY_analysis <- function(output, x_variable, by_group=NULL, model="LMM"){
       lm_sign[which(rownames(lm_sign)==yy),4] 
     }) 
     
-    plotdata_Stab <- data.frame(Site = rep(plotdata$Site, 4), 
+    plotdata_Stab <- data.frame(Dataset = rep(plotdata$Dataset, 4), 
                                 Order_q = rep(plotdata$Order_q, 4), 
                                 Stability = c(plotdata$Gamma, 
                                               plotdata$Alpha, 
@@ -1425,7 +1425,7 @@ ggplotColors <- function(g){
 
 
 ## ========== no visible global function definition for R CMD check ========== ##
-utils::globalVariables(c("COLOR", "Order_q", "Site", "Stability", "Synchrony"
+utils::globalVariables(c("COLOR", "Order_q", "Dataset", "Stability", "Synchrony"
 ))
 
 

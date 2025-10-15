@@ -205,16 +205,16 @@ head(round(Data_Jena_462_populations[,1:5],2), 10)
 
 #### The hierarchical structure data
 
-Run the following code to view the first ten rows of the data `Jena_hierarchical_structure`:
+Run the following code to view the first ten rows of the data `Data_Jena_hierarchical_structure`:
 
 ```{r, eval=F}
-data("Jena_hierarchical_structure")
-head(Jena_hierarchical_mat, 10)
+data("Data_Jena_hierarchical_structure")
+head(Data_Jena_hierarchical_structure, 10)
 ```
 
 ```{r, echo=F}
-data("Jena_hierarchical_structure")
-head(Jena_hierarchical_mat, 10)
+data("Data_Jena_hierarchical_structure")
+head(Data_Jena_hierarchical_structure, 10)
 ```
 
 ## Example 1: Comparing stability profiles for two individual plots  
@@ -289,14 +289,14 @@ To illustrate, run the following code to view the first ten rows of the output:
 metacommunities <- Data_Jena_20_metacommunities
 output_metacommunities_q <- iSTAY_Multiple(data = metacommunities[which(names(metacommunities) %in% c("B1_1",  "B3_2"))],
                                 order.q = seq(0.1,2,0.1), Alltime=TRUE)
-head(output_multi_q, 10)
+head(output_metacommunities_q, 10)
 ```
 
 ```{r, echo=F}
 metacommunities <- Data_Jena_20_metacommunities
 output_metacommunities_q <- iSTAY_Multiple(data = metacommunities[which(names(metacommunities) %in% c("B1_1",  "B3_2"))],
                                 order.q = seq(0.1,2,0.1), Alltime=TRUE)
-head(output_multi_q, 10)
+head(output_metacommunities_q, 10)
 ```
 
 The output above includes the group name (`Dataset`), the order q (`Order_q`), and the corresponding stability and synchrony measures (`Gamma`, `Alpha`, `Beta` stability, and `Synchrony`).  
@@ -323,7 +323,7 @@ head(cbind(output_metacommunities_div[,1:2], round(output_metacommunities_div[3:
 ```
 
 ```{r, echo=FALSE}
-output_metacommunities_div <- iSTAY_Multiple(data = output_metacommunities_div, order.q = c(1,2), Alltime = TRUE)
+output_metacommunities_div <- iSTAY_Multiple(data = metacommunities, order.q = c(1,2), Alltime = TRUE)
 
 output_metacommunities_div <- data.frame(output_metacommunities_div,
                                log2_sowndiv = log2(as.numeric(do.call(rbind, strsplit(output_metacommunities_div[, 1], "_"))[, 2])),
@@ -437,7 +437,7 @@ The output above includes the group name (`Dataset`), the order q (`Order_q`), a
 To obtain the stability and synchrony profiles, run the following code:
 
 ```{r, fig.align='center', fig.width = 7, fig.height = 4.5}
-ggStay_qprofile(output = output_metapopulations_q)
+ggiSTAY_qprofile(output = output_metapopulations_q)
 ```
 
 ## Exammple 8: Assessing the relationships between diversity and gamma, alpha, and beta stability, as well as synchrony based on 76 metapoulations
@@ -486,7 +486,8 @@ To illustrate, run the following code to display the first ten rows of the outpu
 ```{r, eval=F}
 data("Data_Jena_462_populations")
 data("Data_Jena_hierarchical_structure")
-output_hier_q <- Stay_Hier(data = Data_Jena_hierarchical_structure,
+output_hier_q <- iSTAY_Hier(data = Data_Jena_462_populations,
+                            structure = Data_Jena_hierarchical_structure,
                            order.q=seq(0.1,2,0.1), Alltime=TRUE)
 head(cbind(output_hier_q[,1:2], round(output_hier_q[,3:6],3)), 10)
 ```
@@ -495,8 +496,8 @@ head(cbind(output_hier_q[,1:2], round(output_hier_q[,3:6],3)), 10)
 
 data("Data_Jena_462_populations")
 data("Data_Jena_hierarchical_structure")
-output_hier_q <- Stay_Hier(data = Data_Jena_hierarchical_structure,
-                           order.q=seq(0.1,2,0.1), Alltime=TRUE)
+output_hier_q <- iSTAY_Hier(data = Data_Jena_hierarchical_structure,
+                           order.q = seq(0.1,2,0.1), Alltime = TRUE)
 head(cbind(output_hier_q[,1:2], round(output_hier_q[,3:6],3)), 10)
 ```
 
