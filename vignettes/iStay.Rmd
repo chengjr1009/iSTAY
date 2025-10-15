@@ -496,8 +496,9 @@ head(cbind(output_hier_q[,1:2], round(output_hier_q[,3:6],3)), 10)
 
 data("Data_Jena_462_populations")
 data("Data_Jena_hierarchical_structure")
-output_hier_q <- iSTAY_Hier(data = Data_Jena_hierarchical_structure,
-                           order.q = seq(0.1,2,0.1), Alltime = TRUE)
+output_hier_q <- iSTAY_Hier(data = Data_Jena_462_populations,
+                            structure = Data_Jena_hierarchical_structure,
+                           order.q=seq(0.1,2,0.1), Alltime=TRUE)
 head(cbind(output_hier_q[,1:2], round(output_hier_q[,3:6],3)), 10)
 ```
 
