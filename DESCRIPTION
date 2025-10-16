@@ -3,7 +3,7 @@ Type: Package
 Title: Information-Based Stability and Synchrony Measures
 Version: 1.0.0
 Date: 2025-10-16
-Author: Anne Chao [aut, cre], Yu-Ting Hwang [aut], Johnny Shia [aut]
+Author: Anne Chao [aut, cre], Yu-Ting Huang [aut], Johnny Shia [aut]
 Maintainer: Anne Chao <chao@stat.nthu.edu.tw>
 Authors@R:
   c(person("Anne",
