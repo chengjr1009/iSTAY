@@ -1,71 +1,19 @@
-## inst/CITATION — evaluated by utils::citation()
-
-`%||%` <- function(a, b) if (!is.null(a) && nzchar(a)) a else b
-
-meta  <- tryCatch(utils::packageDescription("iStay"), error = function(e) NULL)
-pkg   <- meta$Package %||% "iStay"
-ver   <- meta$Version %||% "1.0.0"
-title <- meta$Title   %||% "Measuring ecological stability and synchrony"
-
-get_year <- function(meta) {
-  cand <- meta[["Date/Publication"]] %||% meta[["Date"]] %||% ""
-  m <- regmatches(cand, regexpr("\\d{4}", cand))
-  if (length(m) == 1 && nzchar(m)) m else format(Sys.Date(), "%Y")
-}
-yr <- if (!is.null(meta)) get_year(meta) else format(Sys.Date(), "%Y")
-
-utils::citHeader(paste0("To cite ", pkg, " in publications use:"))
-
-## --- Software / package entry ---
-utils::citEntry(
-  entry = "Manual",
-  title = paste(pkg, ":", title),
-  author = utils::personList(
-    utils::as.person("Anne Chao"),
-    utils::as.person("Johnny Shia")
-  ),
-  year  = yr,
-  note  = sprintf("R package version %s. ", ver),
-  textVersion = paste(
-    sprintf("Anne Chao and Johnny Shia (%s).", yr),
-    sprintf("%s: %s.", pkg, title),
-    sprintf("R package version %s.", ver)
-  )
+bibentry(
+		 bibtype = 'Article',
+		 title = 'Measuring temporal change in alpha diversity: A framework integrating taxonomic, phylogenetic and functional diversity and the iNEXT.3D standardization.',
+     author = c(person("Anne Chao"),
+                person("Peter A. Henderson"),
+  		          person("Chun-Huo Chiu"),
+  		          person("Faye Moyes"),
+  		          person("Kai-Hsiang Hu"),
+    	          person("Maria Dornelas"),
+                person("Anne E. Magurran")),
+		 journal = 'Methods in Ecology and Evolution',
+		 year    = '2021',
+		 month   = "10",
+		 volume  = "12",
+     pages   = "1926-1940",
+     doi     = '10.1111/2041-210X.13682',
+     header  = "To cite iNEXT.3D in publications use:",
+		 textVersion = paste('Chao, A., Henderson, P. A., Chiu, C.-H., Moyes, F., Hu, K.-H., Dornelas, M. and Magurran, A. E. (2021). Measuring temporal change in alpha diversity: a framework integrating taxonomic, phylogenetic and functional diversity and the iNEXT.3D standardization. Methods in Ecology and Evolution, 12, 1926-1940.')
 )
-
-## --- Preprint entry ---
-utils::citEntry(
-  entry  = "Article",
-  title  = "A continuum of information-based temporal stability measures and their decomposition across hierarchical levels",
-  author = utils::personList(
-    utils::as.person("Anne Chao"),
-    utils::as.person("Robert K. Colwell"),
-    utils::as.person("Johnny Shia"),
-    utils::as.person("Simon Thorn"),
-    utils::as.person("Ming-Yun Yang"),
-    utils::as.person("Oliver Mitesser"),
-    utils::as.person("Yu-Ting Huang"),
-    utils::as.person("Mareike Kortmann"),
-    utils::as.person("Akira S. Mori"),
-    utils::as.person("Benjamin M. Delory"),
-    utils::as.person("Andreas Fichtner"),
-    utils::as.person("Yuanyuan Huang"),
-    utils::as.person("Christiane Roscher"),
-    utils::as.person("Bernhard Schmid"),
-    utils::as.person("Nico Eisenhauer"),
-    utils::as.person("Jörg Müller")
-  ),
-  year    = "2025",
-  journal = "bioRxiv",
-  doi     = "10.1101/2025.08.20.671203",
-  url     = "https://doi.org/10.1101/2025.08.20.671203",
-  note    = "preprint",
-  textVersion = paste(
-    "Anne Chao, Robert K. Colwell, et al. (2025).",
-    "A continuum of information-based temporal stability measures and their decomposition across hierarchical levels.",
-    "bioRxiv preprint. https://doi.org/10.1101/2025.08.20.671203"
-  )
-)
-
-utils::citFooter("If relevant, please cite both the software and the preprint (or the published article once available).")
-
