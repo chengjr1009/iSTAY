@@ -28,10 +28,10 @@ iSTAY_Hier(
 }
 \value{
 a data frame with the following columns: \cr
- Hier_level--hierarchical level(e.g. Level 1: population, Level 2: community, Level 3: block, and level 4: overall data)) \cr
- Order_q--order of stability or synchrony \cr
- Gamma, Alpha, Beta--stability measures of order q \cr
- Synchrony--synchrony measure of order q
+ Hier_level: hierarchical level (e.g. Level 1: population, Level 2: community, Level 3: block, and level 4: overall data) \cr
+ Order_q: order of stability or synchrony \cr
+ Gamma, Alpha, Beta: stability measures of order q \cr
+ Synchrony: synchrony measure of order q
 }
 \description{
 \code{iSTAY_Hier} computes gamma, alpha, and beta stability, as well as synchrony, at each hierarchical level for time series of biomass or other variables.
@@ -40,8 +40,9 @@ a data frame with the following columns: \cr
 
 data("Data_Jena_462_populations")
 data("Data_Jena_hierarchical_structure")
-output_hier <- iSTAY_Hier(data = Data_Jena_462_populations, structure = Data_Jena_hierarchical_structure,
-                         order.q=c(1,2), Alltime=TRUE)
+output_hier <- iSTAY_Hier(data = Data_Jena_462_populations, 
+         structure = Data_Jena_hierarchical_structure,
+         order.q=c(1,2), Alltime=TRUE)
 output_hier
 
 

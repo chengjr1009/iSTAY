@@ -25,10 +25,10 @@ iSTAY_Multiple(
 }
 \value{
 a data frame with the following columns: \cr
- Dataset--the input dataset \cr
- Order_q--order of stability or synchrony \cr
- Gamma, Alpha, Beta--stability measures of order q \cr 
- Synchrony--synchrony measure of order q
+ Dataset: the input dataset \cr
+ Order_q: order of stability or synchrony \cr
+ Gamma, Alpha, Beta: stability measures of order q \cr 
+ Synchrony: synchrony measure of order q
 }
 \description{
 \code{iSTAY_Multiple} computes gamma, alpha, and beta stability, as well as synchrony, for multiple time-series data.
@@ -43,7 +43,7 @@ output_metacommunities
 # Stability of metapopulations
 data("Data_Jena_76_metapopulations")
 metapopulations <- Data_Jena_76_metapopulations
-output_metapopulations <- iSTAY_Multiple(data = multiple_species, order.q = c(1,2), Alltime = TRUE)
+output_metapopulations <- iSTAY_Multiple(data = metapopulations, order.q = c(1,2), Alltime = TRUE)
 output_metapopulations
 
 

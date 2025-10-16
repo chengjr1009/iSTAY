@@ -1,6 +1,6 @@
 
 utils::globalVariables(c(
-  "Alpha", "Gamma", "Gvariable", "Hier", "Dataset", "Xvariable",
+  "Alpha", "Gamma", "Gvariable", "Hier_level", "Dataset", "Xvariable",
   "coef", "intercept", "lm", "pred", "slope",
   "type", "value", "x_max", "x_min"
 ))
@@ -18,9 +18,9 @@ utils::globalVariables(c(
 #'
 #'
 #' @return a dataframe with columns: \cr
-#' Dataset--the input dataset \cr
-#' Order_q--order of stability \cr
-#' Stability--stability measures of order q
+#' Dataset: the input dataset \cr
+#' Order_q: order of stability \cr
+#' Stability: stability measures of order q
 #'
 #'
 #' @examples
@@ -106,10 +106,10 @@ iSTAY_Single <- function (data, order.q = c(1, 2), Alltime = TRUE, start_T = NUL
 #'
 #'
 #' @return a data frame with the following columns: \cr
-#'  Dataset--the input dataset \cr
-#'  Order_q--order of stability or synchrony \cr
-#'  Gamma, Alpha, Beta--stability measures of order q \cr 
-#'  Synchrony--synchrony measure of order q
+#'  Dataset: the input dataset \cr
+#'  Order_q: order of stability or synchrony \cr
+#'  Gamma, Alpha, Beta: stability measures of order q \cr 
+#'  Synchrony: synchrony measure of order q
 #'
 #' @examples
 #' # Stability of multiple time series
@@ -121,7 +121,7 @@ iSTAY_Single <- function (data, order.q = c(1, 2), Alltime = TRUE, start_T = NUL
 #' # Stability of metapopulations
 #' data("Data_Jena_76_metapopulations")
 #' metapopulations <- Data_Jena_76_metapopulations
-#' output_metapopulations <- iSTAY_Multiple(data = multiple_species, order.q = c(1,2), Alltime = TRUE)
+#' output_metapopulations <- iSTAY_Multiple(data = metapopulations, order.q = c(1,2), Alltime = TRUE)
 #' output_metapopulations
 #'
 #'
@@ -268,17 +268,18 @@ iSTAY_Multiple <- function (data, order.q = c(1, 2), Alltime = TRUE, start_T = N
 #' @import dplyr
 #'
 #' @return a data frame with the following columns: \cr
-#'  Hier_level--hierarchical level(e.g. Level 1: population, Level 2: community, Level 3: block, and level 4: overall data)) \cr
-#'  Order_q--order of stability or synchrony \cr
-#'  Gamma, Alpha, Beta--stability measures of order q \cr
-#'  Synchrony--synchrony measure of order q
+#'  Hier_level: hierarchical level (e.g. Level 1: population, Level 2: community, Level 3: block, and level 4: overall data) \cr
+#'  Order_q: order of stability or synchrony \cr
+#'  Gamma, Alpha, Beta: stability measures of order q \cr
+#'  Synchrony: synchrony measure of order q
 #'
 #' @examples
 #'
 #' data("Data_Jena_462_populations")
 #' data("Data_Jena_hierarchical_structure")
-#' output_hier <- iSTAY_Hier(data = Data_Jena_462_populations, structure = Data_Jena_hierarchical_structure,
-#'                          order.q=c(1,2), Alltime=TRUE)
+#' output_hier <- iSTAY_Hier(data = Data_Jena_462_populations, 
+#'          structure = Data_Jena_hierarchical_structure,
+#'          order.q=c(1,2), Alltime=TRUE)
 #' output_hier
 #'
 #'
@@ -481,7 +482,9 @@ iSTAY_Hier <- function (data, structure, order.q = c(1, 2), Alltime = TRUE, star
 #'
 #'
 #' @return For an \code{iSTAY_Single} object, this function return a figure showing the stability profile.\cr
+#'
 #' For an \code{iSTAY_Multiple} object, it returns a figure displaying the profiles for gamma, alpha, and beta stability, as well as synchrony.\cr
+#'
 #' For an \code{iSTAY_Hier} object, it returns a figure displaying the profiles for gamma, alpha, and beta stability, as well as synchrony.
 #'
 #'
@@ -493,42 +496,49 @@ iSTAY_Hier <- function (data, structure, order.q = c(1, 2), Alltime = TRUE, star
 #'
 #' ## Single time series analysis
 #' # Plot the stability profiles of two selected plots
+#' # See Example 1 in the iSTAY vignette for the output.
+#' 
 #' individual_plots <- do.call(rbind, Data_Jena_20_metacommunities)
-#' output_individual_plots_q <- iSTAY_Single(
-#'                data = individual_plots[which(rownames(individual_plots) %in% c("B1_4.B1A04", "B4_2.B4A14")),],
+#' output_two_plots_q <- iSTAY_Single(
+#'                data = individual_plots[which(rownames(individual_plots) 
+#'                %in% c("B1_4.B1A04", "B4_2.B4A14")),],
 #'                order.q = seq(0.1,2,0.1), Alltime = TRUE)
-#' ggiSTAY_qprofile(output = output_individual_plots_q)
+#' ggiSTAY_qprofile(output = output_two_plots_q)
 #'
 #' # Plot the stability profiles of two selected populations
+#' # See Example 3 in the iSTAY vignette for the output.
 #' individual_populations <- do.call(rbind, Data_Jena_76_metapopulations)
-#' output_individual_populations_q <- iSTAY_Single(
+#' output_two_populations_q <- iSTAY_Single(
 #'                data = individual_populations[which(rownames(individual_populations) 
 #'                %in% c("B1A06_B1_16.BM_Ant.odo", "B1A06_B1_16.BM_Cam.pat")),],
 #'                order.q = seq(0.1,2,0.1), Alltime = TRUE)
-#' ggiSTAY_qprofile(output = output_individual_populations_q)
+#' ggiSTAY_qprofile(output = output_two_populations_q)
 #'
 #'
 #' ## Multiple time series analysis
 #' # Plot the gamma, alpha and beta stability profiles, 
-#' # as well as synchrony profiles of two selected metacommunities
+#' # as well as synchrony profiles for two selected metacommunities
+#' # See Example 5 in the iSTAY vignette for the output.
 #' 
 #' metacommunities <- Data_Jena_20_metacommunities
-#' output_metacommunities_q <- iSTAY_Multiple(
+#' output_two_metacommunities_q <- iSTAY_Multiple(
 #'            data = metacommunities[which(names(metacommunities) %in% c("B1_1",  "B3_2"))],
 #'            order.q = seq(0.1,2,0.1), Alltime = TRUE)
-#' ggiSTAY_qprofile(output = output_metacommunities_q)
+#' ggiSTAY_qprofile(output = output_two_metacommunities_q)
 #'
 #' # Plot the gamma, alpha and beta stability profiles, 
 #' # as well as synchrony profiles of two selected metapopulations
+#' # See Example 7 in the iSTAY vignette for the output.
 #' 
 #' metapopulations <- Data_Jena_76_metapopulations
-#' output_metapopulations_q <- iSTAY_Multiple(
+#' output_two_metapopulations_q <- iSTAY_Multiple(
 #'            data = metapopulations[which(names(metapopulations) %in% c("B1A04_B1_4", "B4A14_B4_2"))],
 #'            order.q = seq(0.1,2,0.1), Alltime = TRUE)
-#' ggiSTAY_qprofile(output = output_metapopulations_q)
+#' ggiSTAY_qprofile(output = output_two_metapopulations_q)
 #'
 #'
 #' ## Hierarchical time series analysis
+#' # See Example 9 in the iSTAY vignette for the output.
 #' output_hier_q <- iSTAY_Hier(data = Data_Jena_462_populations,
 #'                            structure = Data_Jena_hierarchical_structure,
 #'                            order.q = seq(0.1,2,0.1), Alltime = TRUE)
@@ -751,7 +761,8 @@ ggiSTAY_qprofile <- function(output){
 #' @import dplyr
 #'
 #'
-#' @return For an \code{iSTAY_Single} object, this function return a figure showing the relationship between the diversity (or other) variable and stability. \cr
+#' @return For an \code{iSTAY_Single} object, this function returns a figure showing the relationship between the diversity (or other) variable and stability. \cr
+#'
 #' For an \code{iSTAY_Multiple} object, this function returns a figure showing the diversity (or other) variable and gamma, alpha, and beta stability, as well as synchrony.
 #'
 #' @examples
@@ -761,52 +772,64 @@ ggiSTAY_qprofile <- function(output){
 #' data("Data_Jena_hierarchical_structure")
 #'
 #' ## Single time series analysis
-#' # Analyze the stability of individual plots and diversity-stability relationship
+#' # Analyze the stability of individual plots and diversity-stability 
+#' # relationship based on 76 plots
+#' # See Example 2 in the iSTAY vignette for the output.
 #' individual_plots <- do.call(rbind, Data_Jena_20_metacommunities)
 #' output_individual_plots_div <- iSTAY_Single(data=individual_plots, order.q=c(1,2), Alltime=TRUE)
 #' output_individual_plots_div <- data.frame(output_individual_plots_div,
-#'                                      log2_sowndiv = log2(as.numeric(do.call(rbind,
-#'                                        strsplit(output_individual_plots_div[,1],"[._]+"))[,2])),
-#'                                      block = do.call(rbind,
-#'                                        strsplit(output_individual_plots_div[,1],"[._]+"))[,1])
+#'                                  log2_sowndiv = log2(as.numeric(do.call(rbind,
+#'                                  strsplit(output_individual_plots_div[,1],"[._]+"))[,2])),
+#'                                  block = do.call(rbind,
+#'                                  strsplit(output_individual_plots_div[,1],"[._]+"))[,1])
 #'
 #' ggiSTAY_analysis(output = output_individual_plots_div, x_variable = "log2_sowndiv",
 #'                     by_group="block", model="LMM")
 #'
-#' # Analyze the stability of individual populations and diversity-stability relationships
+#' # Analyze the stability of individual populations and diversity-stability 
+#' # relationships based on 462 populations
+#' # See Example 4 in the iSTAY vignette for the output.
 #' individual_populations <- do.call(rbind, Data_Jena_76_metapopulations)
 #' output_individual_populations_div <- iSTAY_Single(data = individual_populations,
 #'                                          order.q=c(1,2), Alltime=TRUE)
 #' output_individual_populations_div <- data.frame(output_individual_populations_div,
 #'                               log2_sowndiv = log2(as.numeric(do.call(rbind,
-#'                                       strsplit(output_individual_populations_div[,1],"[._]+"))[,3])),
+#'                               strsplit(output_individual_populations_div[,1],"[._]+"))[,3])),
 #'                               block=do.call(rbind,
-#'                                     strsplit(output_individual_populations_div[,1],"[._]+"))[,2])
+#'                               strsplit(output_individual_populations_div[,1],"[._]+"))[,2])
 #'
 #' ggiSTAY_analysis(output = output_individual_populations_div, x_variable = "log2_sowndiv",
 #'                     by_group = "block", model = "LMM")
 #'
 #'
 #' ## Multiple time series analysis
-#' # Analyze the stability and synchrony within each metacommunity and their relationships with diversity
+#' # Analyze the stability and synchrony within each metacommunity
+#' # and their relationships with diversity based on 20 metacommunities
+#' # See Example 6 in the iSTAY vignette for the output.
 #' metacommunities <- Data_Jena_20_metacommunities
-#' output_metacommunities_div <- iSTAY_Multiple(data = metacommunities, order.q = c(1,2), Alltime = TRUE)
+#' output_metacommunities_div <- iSTAY_Multiple(data = metacommunities, 
+#'                                      order.q = c(1,2), Alltime = TRUE)
 #' output_metacommunities_div <- data.frame(output_metacommunities_div, 
 #'                                     log2_sowndiv = log2(as.numeric(do.call(rbind, 
 #'                                     strsplit(output_metacommunities_div[, 1], "_"))[, 2])),
-#'                                     block = do.call(rbind, strsplit(output_metacommunities_div[, 1], "_"))[, 1])
+#'                                     block = do.call(rbind, 
+#'                                     strsplit(output_metacommunities_div[, 1], "_"))[, 1])
 #'
 #' ggiSTAY_analysis(output = output_metacommunities_div, x_variable = "log2_sowndiv",
 #'                     by_group = "block", model = "LMM")
 #'
-#' # Analyze the stability and synchrony within each metapopulation and their relationships with diversity
+#' # Analyze the stability and synchrony within each metapopulation
+#' # and their relationships with diversity based on 76 metapopulations
+#' # See Example 8 in the iSTAY vignette for the output.
+#' 
 #' metapopulations <- Data_Jena_76_metapopulations
 #' output_metapopulations_div <- iSTAY_Multiple(data = metapopulations,
 #'                                               order.q=c(1,2), Alltime=TRUE)
 #' output_metapopulations_div <- data.frame(output_metapopulations_div,
 #'                              log2_sowndiv = log2(as.numeric(do.call(rbind,
 #'                              strsplit(output_metapopulations_div[,1],"[._]+"))[,3])),
-#'                              block = do.call(rbind, strsplit(output_metapopulations_div[,1],"_"))[,2])
+#'                              block = do.call(rbind, 
+#'                              strsplit(output_metapopulations_div[,1],"_"))[,2])
 #'
 #' ggiSTAY_analysis(output = output_metapopulations_div, x_variable = "log2_sowndiv",
 #'                     by_group = "block", model = "LMM")

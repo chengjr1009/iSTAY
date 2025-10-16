@@ -1,5 +1,5 @@
 ---
-title: "An Introductor Vignette for iSTAY Through Examples"
+title: "An Introductory Vignette for iSTAY Through Examples"
 author: "Anne Chao, Yu-Ting Hwang, and Johnny Shia"
 date: "Latest version 1.0.0 (Oct. 2025)"
 output: rmarkdown::html_vignette
@@ -32,21 +32,20 @@ paste  <- base::paste
 
 ```
 
-
-```{r setup}
+```{r, eval = TRUE, echo = FALSE}
 library(iSTAY)
 ```
 
 <font color=#FF6600>
 </font>
 
-`iSTAY` (information-based stability and synchrony measures) is an R package that provides functions to compute a continuum of information-based measures for quantifying the temporal stability of populations, communities, and ecosystems, as well as their associated synchrony, based on species (or species assemblage) biomass or other key variables. When biodiversity data are available, the package also enables the assessment of the corresponding diversity–stability relationships. The information-based measures are derived from Hill numbers parameterized by an order q > 0; see Chao et al. (2025) for the theoretical and methodological background. All measures are illustrated using temporal biomass data from the Jena experiment (Roscher et al. 2004; Weisser et al. 2017; Wagg et al. 2022).
+`iSTAY` (information-based stability and synchrony measures) is an R package that provides functions to compute a continuum of information-based measures for quantifying the temporal stability of populations, communities, and ecosystems, as well as their associated synchrony, based on species (or species assemblage) biomass or other key variables. When biodiversity data are available, the package also enables the assessment of the corresponding diversity–stability and diversity-synchrony relationships. The information-based measures are derived from Hill numbers parameterized by an order q > 0; see Chao et al. (2025) for the theoretical and methodological background. All measures are illustrated using temporal biomass data from the Jena experiment (Roscher et al. 2004; Weisser et al. 2017; Wagg et al. 2022). This introductory vignette provides examples—with both code and output—to help users become familiar with the package.    
 
 Specifically, `iSTAY` features the following measures for three types of analyses:
 
 (1)	<u>Single time series:</u> computes stability measures of order q > 0 and displays the corresponding stability profile for a time series (or for each time series analyzed individually). The stability profile illustrates how stability varies with the order q. When biodiversity data are available, `iSTAY` also assesses the diversity–stability relationship across individual time series.
 
-(2)	<u>Multiple time series:</u> computes four measures—gamma, alpha, and beta stability, as well as synchrony—and displays the corresponding profiles for multiple time series (or for each set of time series within a collection). When biodiversity data are available, iSTAY also assesses the diversity–stability and diversity–synchrony relationships. 
+(2)	<u>Multiple time series:</u> computes four measures—gamma, alpha, and beta stability, as well as synchrony—and displays the corresponding profiles for multiple time series (or for each set of time series within a collection). When biodiversity data are available, `iSTAY` also assesses the diversity–stability and diversity–synchrony relationships. 
 
 (3)	<u>Hierarchical series:</u> computes four measures—gamma, alpha, and beta stability, as well as synchrony—for each hierarchical level, and provides the corresponding stability and synchrony profiles.
 
@@ -59,16 +58,16 @@ If you publish your work based on the results from the `iSTAY` package, you shou
 
 <li> Chao, A., Hwang, Y.-T., and Shia, J. (2025). `iSTAY` package: information-based stability and synchrony measures. Available from CRAN. </li>
 
-## Software needed to run iStay in R
+## Software needed to run `iSTAY` in R
 - Required: [R](https://cran.r-project.org/)
 - Suggested: [RStudio IDE](https://posit.co/products/open-source/rstudio/#Desktop)
 
 
 ## How to run `iSTAY`:
 
-The `iSTAY` package can be downloaded from CRAN or Github [iStay_github](https://github.com/AnneChao/iSTAY) using the following commands. For a first-time installation, an additional visualization extension package (`ggplot2`) must be installed and loaded.
+The `iSTAY` package can be downloaded from CRAN or Github [iSTAY_github](https://github.com/AnneChao/iSTAY) using the following commands. For a first-time installation, an additional visualization extension package (`ggplot2`) must be installed and loaded.
 
-```{r, eval = FALSE}
+```{r, eval = FALSE, echo = TRUE}
 ## install iSTAY package from CRAN
 # install.packages("iSTAY")  
 
@@ -130,7 +129,7 @@ The data input format for each function is detailed in the manual.
 
 ## Data Convertion
 
-#### Data of 76 individual plots
+#### Data for 76 individual plots
 
 The following code returns the records of the first metacommunity (B1_1), which comprises three plots (B1A08, B1A15 and B1A18) in Block 1, each sown with one species. Only the first five columns are shown.
 
@@ -160,9 +159,9 @@ individual_plots <- do.call(rbind, Data_Jena_20_metacommunities)
 head(round(individual_plots[,1:5],2), 10)
 ```
 
-#### Data of 462 individual populations
+#### Data for 462 individual populations
 
-The following code returns the records of the first metapopulation, which comprises 16 populations in Plot B1A01 (dataframe `B1A01_B1_16`). Only the first 10 populations and the first five columns are shown.
+The following code returns the records of the first metapopulation, which comprises 16 populations in Plot B1A01 (data frame `B1A01_B1_16`). Only the first 10 populations and the first five columns are displayed.
 
 ```{r, eval=F}
 data("Data_Jena_76_metapopulations")
@@ -203,9 +202,9 @@ head(round(Data_Jena_462_populations[,1:5],2), 10)
 ```
 
 
-#### The hierarchical structure data
+#### Data for hierarchical structure data
 
-Run the following code to view the first ten rows of the data `Data_Jena_hierarchical_structure`:
+Run the following code to view the first ten rows of the dataset `Data_Jena_hierarchical_structure`:
 
 ```{r, eval=F}
 data("Data_Jena_hierarchical_structure")
@@ -217,9 +216,11 @@ data("Data_Jena_hierarchical_structure")
 head(Data_Jena_hierarchical_structure, 10)
 ```
 
-## Example 1: Comparing stability profiles for two individual plots  
+<br><br>
 
-Run the following code to compute stability values of q = 0.1 to q = 2 in increments 0.2 for two selected plots (B1_4.B1A04 and B4_2.B4A14). Only the first ten rows of the outputhown.
+## Example 1: Comparing the stability profiles for two selected individual plots  
+
+Run the following code to compute stability values of q = 0.1 to q = 2 in increments 0.2 for two selected plots (B1_4.B1A04 and B4_2.B4A14). Only the first ten rows of the output are displayed.
 
 ```{r, eval=F}
 individual_plots <- do.call(rbind, Data_Jena_20_metacommunities)
@@ -243,10 +244,11 @@ Run the following code to compare the stability profiles of the two selected plo
 ggiSTAY_qprofile(output = output_two_plots_q)
 ```
 
-## Example 2: Assessing the diversity-stability relationships based on 76 plots  
+<br><br>
 
-To obtain the diversity–stability relationship plot, first combine the diversity information with the output of `iSTAY_Single()`.  
-The following code demonstrates this process and shows only the first ten rows of the result:
+## Example 2: Assessing the diversity-stability relationships based on 76 individual plots  
+
+Run the following code to compute stability values at orders q = 1 and q = 2 for all 76 individual plots, and to attach the corresponding diversity (log2_sowndiv) and block identifiers. The block identifier is used to set the `by_group` argument; it colors points by group and serves as the random effect for both intercept and slope when the Linear Mixed Model is selected in `ggiSTAY_analysis`. Only the first ten rows of the output are displayed.
 
 ```{r, eval=FALSE}
 output_individual_plots_div <- iSTAY_Single(data = individual_plots, order.q = c(1,2), Alltime = TRUE)
@@ -268,49 +270,107 @@ colnames(output_individual_plots_div)[1] <- c("Dataset")
 head(output_individual_plots_div, 10)
 ```
 
+The following code returns the diversity-stability relationships based on all 76 individual plots.
+
 ```{r,fig.width = 7}
 ggiSTAY_analysis(output = output_individual_plots_div, x_variable = "log2_sowndiv", 
                 by_group = "block", model = "LMM")
 ```
 
+<br><br>
 
-## Exammple 3: Computing gamma, alpha, and beta stability, as well as synchrony in two selected metacommunities
+## Example 3: Comparing the stability profiles for two selected individual populations  
 
-Based on biomass data, `iSTAY_Multiple()` computes the stability of each group of multiple communities (plots) for a specified order q.  
-The function `ggiSTAY_qprofile()` is used to plot the stability profile.  
-If diversity information is combined with the output of `iSTAY_Multiple()`, the function `ggiSTAY_analysis()` can be used to plot the relationship between stability and diversity.  
+Run the following code to compute stability values of q = 0.1 to q = 2 in increments 0.2 for two selected populations in Plot B1A06 ("Ant.odo" and "Cam.pat"). Only the first ten rows of the output are displayed.
 
-For the stability profile, the following example sets order q from 0.1 to 2.0 in increments of 0.1, using 22 years of biomass data from only two groups of multiple communities ("B1_1" and "B3_2") to avoid an overly complicated graph.  
-For the diversity–stability relationship, the example uses the default setting of order q (q = 1 and q = 2) and the 22-year biomass data from all 20 groups of multiple communities.  
 
-To illustrate, run the following code to view the first ten rows of the output:
+```{r, eval=F}
+individual_populations <- do.call(rbind, Data_Jena_76_metapopulations)
+output_two_populations_q <- iSTAY_Single(data = individual_populations[which(rownames(individual_populations) %in% c("B1A06_B1_16.BM_Ant.odo", "B1A06_B1_16.BM_Cam.pat")),],
+                                       order.q=seq(0.1,2,0.1), Alltime=TRUE)
+head(output_two_populations_q, 10)
+```
+
+```{r, echo=F}
+individual_populations <- do.call(rbind, Data_Jena_76_metapopulations)
+output_two_populations_q <- iSTAY_Single(data = individual_populations[which(rownames(individual_populations) %in% c("B1A06_B1_16.BM_Ant.odo", "B1A06_B1_16.BM_Cam.pat")),],
+                                       order.q=seq(0.1,2,0.1), Alltime=TRUE)
+head(output_two_populations_q, 10)
+```
+
+Run the following code to compare the stability profiles of the two selected populations:
+
+```{r, fig.align='center'}
+ggiSTAY_qprofile(output = output_two_populations_q)
+```
+
+<br><br>
+
+## Example 4: Assessing the diversity-stability relationships based on 462 individual populations  
+
+Run the following code to compute stability values at orders q = 1 and q = 2 for all 462 individual populations, and to attach the corresponding diversity (log2_sowndiv) and block identifiers. The block identifier is used to set the `by_group` argument; it colors points by group and serves as the random effect for both intercept and slope when the Linear Mixed Model is selected in `ggiSTAY_analysis`. Only the first ten rows of the output are displayed.
+
+
+```{r, eval=FALSE}
+output_individual_populations_div <- iSTAY_Single(data = individual_populations,
+                                         order.q = c(1,2), Alltime=TRUE)
+output_individual_populations_div <- data.frame(output_individual_populations_div,
+                              log2_sowndiv = log2(as.numeric(do.call(rbind,
+                                      strsplit(output_individual_populations_div[,1],"[._]+"))[,3])),
+                              block = do.call(rbind,
+                                    strsplit(output_individual_populations_div[,1],"[._]+"))[,2])
+head(output_individual_populations_div, 10)
+```
+
+```{r, echo=FALSE}
+output_individual_populations_div <- iSTAY_Single(data = individual_populations,
+                                         order.q = c(1,2), Alltime=TRUE)
+output_individual_populations_div <- data.frame(output_individual_populations_div,
+                              log2_sowndiv = log2(as.numeric(do.call(rbind,
+                                      strsplit(output_individual_populations_div[,1],"[._]+"))[,3])),
+                              block = do.call(rbind,
+                                    strsplit(output_individual_populations_div[,1],"[._]+"))[,2])
+head(output_individual_populations_div, 10)
+```
+
+The following code returns the diversity-stability relationships based on all 462 individual populations.
+
+```{r,fig.width = 7}
+ggiSTAY_analysis(output=output_individual_populations_div, x_variable="log2_sowndiv",
+                    by_group="block", model="LMM")
+```
+
+<br><br>
+
+## Example 5: Comparing the gamma, alpha, and beta stability profiles, as well as the synchrony profiles for two selected metacommunities
+
+Run the following code to compute the gamma, alpha and beta stability, as well as synchrony values of q = 0.1 to q = 2 in increments 0.2 for two selected metacommunities ("B1_1" and "B3_2"). Only the first ten rows of the output are displayed.
 
 ```{r, eval=F}
 metacommunities <- Data_Jena_20_metacommunities
-output_metacommunities_q <- iSTAY_Multiple(data = metacommunities[which(names(metacommunities) %in% c("B1_1",  "B3_2"))],
+output_two_metacommunities_q <- iSTAY_Multiple(data = metacommunities[which(names(metacommunities) %in% c("B1_1",  "B3_2"))],
                                 order.q = seq(0.1,2,0.1), Alltime=TRUE)
-head(output_metacommunities_q, 10)
+head(output_two_metacommunities_q, 10)
 ```
 
 ```{r, echo=F}
 metacommunities <- Data_Jena_20_metacommunities
-output_metacommunities_q <- iSTAY_Multiple(data = metacommunities[which(names(metacommunities) %in% c("B1_1",  "B3_2"))],
+output_two_metacommunities_q <- iSTAY_Multiple(data = metacommunities[which(names(metacommunities) %in% c("B1_1",  "B3_2"))],
                                 order.q = seq(0.1,2,0.1), Alltime=TRUE)
-head(output_metacommunities_q, 10)
+head(output_two_metacommunities_q, 10)
 ```
 
-The output above includes the group name (`Dataset`), the order q (`Order_q`), and the corresponding stability and synchrony measures (`Gamma`, `Alpha`, `Beta` stability, and `Synchrony`).  
-
-To obtain the stability and synchrony profiles, run the following code:
+The following code returns the gamma, alpha, and beta stability profiles, as well as synchrony profiles for the two selected metacommunities.
 
 ```{r, fig.align='center', fig.width = 7, fig.height = 4.5}
-ggiSTAY_qprofile(output=output_metacommunities_q)
+ggiSTAY_qprofile(output = output_two_metacommunities_q)
 ```
 
-## Exammple 4: Assessing the relationships between diversity and gamma, alpha, and beta stability, as well as synchrony based on 20 meta communities
+<br><br>
 
-To obtain the diversity–stability relationship plot, first combine the diversity information with the output of `iSTAY_Multiple()`.  
-The following code demonstrates this process and displays only the first ten rows of the result: 
+## Example 6: Assessing the relationships between diversity and gamma, alpha, and beta stability, as well as synchrony, based on 20 metacommunities
+
+Run the following code to compute the gamma, alpha, and beta stability, as well as synchrony values, at orders q = 1 and q = 2 for all 20 metacommunities. The corresponding diversity (log2_sowndiv) and block identifiers are also included. The block identifier is used to set the `by_group` argument; it colors points by group and serves as the random effect for both intercept and slope when the Linear Mixed Model is selected in `ggiSTAY_analysis`. Only the first ten rows of the output are displayed. 
 
 ```{r, eval=FALSE}
 output_metacommunities_div <- iSTAY_Multiple(data = metacommunities, order.q=c(1,2), Alltime=TRUE)
@@ -332,118 +392,45 @@ rownames(output_metacommunities_div) <- NULL
 head(cbind(output_metacommunities_div[,1:2], round(output_metacommunities_div[3:6],3), output_metacommunities_div[,7:8]), 10)
 ```
 
+The following code returns the relationships between diversity and gamma, alpha, and beta stability, as well as synchrony based on 20 metacommunities.
+
 ```{r,fig.width = 8, fig.height=9.5}
 ggiSTAY_analysis(output = output_metacommunities_div, x_variable = "log2_sowndiv", 
                     by_group = "block", model = "LMM")
 ```
 
-## Example 5: Comparing stability profiles for two individual populations  
-Computing species stability in a single species in each plot with plotting species stability-profile and relationship between species stability and diversity variable. 
+<br><br>
 
-Based on biomass data, `iSTAY_Single()` computes the stability of each species in each plot for a specified order q.  
-The function `ggiSTAY_qprofile()` is used to plot the stability profile.  
-If diversity information is combined with the output of `iSTAY_Single()`, the function `ggiSTAY_analysis()` can be used to plot the relationship between stability and diversity.  
+## Exammple 7: Comparing the gamma, alpha, and beta stability profiles, as well as the synchrony profiles in two selected metapopulations
 
-For the stability profile, the following example sets order q from 0.1 to 2.0 in increments of 0.1, using 21 years of biomass data from only two species in plot B1A06 ("Ant.odo" and "Cam.pat") to avoid an overly complicated graph.  
-For the diversity–stability relationship, the example uses the default setting of order q (q = 1 and q = 2) and the 21-year biomass data of all 462 species (each species in each plot). 
-
-To illustrate, run the following code to display the first ten rows of the output:
-
-```{r, eval=F}
-individual_populations <- do.call(rbind, Data_Jena_76_metapopulations)
-output_individual_populations_q <- iSTAY_Single(data = individual_populations[which(rownames(individual_populations) %in% c("B1A06_B1_16.BM_Ant.odo", "B1A06_B1_16.BM_Cam.pat")),],
-                                       order.q=seq(0.1,2,0.1), Alltime=TRUE)
-head(output_individual_populations_q, 10)
-```
-
-```{r, echo=F}
-individual_populations <- do.call(rbind, Data_Jena_76_metapopulations)
-output_individual_populations_q <- iSTAY_Single(data = individual_populations[which(rownames(individual_populations) %in% c("B1A06_B1_16.BM_Ant.odo", "B1A06_B1_16.BM_Cam.pat")),],
-                                       order.q=seq(0.1,2,0.1), Alltime=TRUE)
-head(output_individual_populations_q, 10)
-```
-
-The output above includes the input datasets name (`Dataset`), the order q (`Order_q`), and the corresponding stability value (`Stability`).  
-
-To obtain the stability profile, run the following code:
-
-```{r, fig.align='center'}
-ggiSTAY_qprofile(output = output_individual_populations_q)
-```
-
-## Example 6: Assessing the diversity-stability relationships based on 462 populations  
-
-
-To obtain the diversity–stability relationship plot, first combine the diversity information with the output of `iSTAY_Single()`.  
-The following code demonstrates this process and displays only the first ten rows of the result: 
-
-```{r, eval=FALSE}
-output_individual_populations_div <- iSTAY_Single(data = individual_populations,
-                                         order.q = c(1,2), Alltime=TRUE)
-output_individual_populations_div <- data.frame(output_individual_populations_div,
-                              log2_sowndiv = log2(as.numeric(do.call(rbind,
-                                      strsplit(output_individual_populations_div[,1],"[._]+"))[,3])),
-                              block = do.call(rbind,
-                                    strsplit(output_individual_populations_div[,1],"[._]+"))[,2])
-head(output_individual_populations_div, 10)
-```
-
-```{r, echo=FALSE}
-output_individual_populations_div <- iSTAY_Single(data = individual_populations,
-                                         order.q = c(1,2), Alltime=TRUE)
-output_individual_populations_div <- data.frame(output_individual_populations_div,
-                              log2_sowndiv = log2(as.numeric(do.call(rbind,
-                                      strsplit(output_individual_populations_div[,1],"[._]+"))[,3])),
-                              block = do.call(rbind,
-                                    strsplit(output_individual_populations_div[,1],"[._]+"))[,2])
-head(output_individual_populations_div, 10)
-```
-
-```{r,fig.width = 7}
-ggiSTAY_analysis(output=output_individual_populations_div, x_variable="log2_sowndiv",
-                    by_group="block", model="LMM")
-```
-
-## Exammple 7: Computing gamma, alpha, and beta stability, as well as synchrony in two selected metapopulations
-
-## Computing species stability in multiple species with plotting species stability-profile and relationship between species stability and diversity variable. 
-
-Based on biomass data, `Stay_Multiple()` computes the species-level stability of multiple species within each plot for a specified order q.  
-The function `ggStay_qprofile()` is used to plot the stability profile.  
-If diversity information is combined with the output of `Stay_Multiple()`, the function `ggStay_analysis()` can be used to plot the relationship between stability and diversity.  
-
-For the stability profile, the following example sets order q from 0.1 to 2.0 in increments of 0.1, using 21 years of biomass data from only two plots with multiple species ("B1A04_B1_4" and "B4A14_B4_2") to avoid an overly complicated graph.  
-For the diversity–stability relationship, the example uses the default setting of order q (q = 1 and q = 2) and the 21-year biomass data from all 76 groups (plots) of multiple species.  
-
-To illustrate, run the following code to display the first ten rows of the output:
+Run the following code to compute the gamma, alpha and beta stability, as well as synchrony values of q = 0.1 to q = 2 in increments 0.2 for two selected metapopulations ("B1A04_B1_4" and "B4A14_B4_2"). Only the first ten rows of the output are displayed.
 
 
 ```{r, eval=F}
 metapopulations <- Data_Jena_76_metapopulations
-output_metapopulations_q <- iSTAY_Multiple(data = metapopulations[which(names(metapopulations) %in% c("B1A04_B1_4", "B4A14_B4_2"))],
+output_two_metapopulations_q <- iSTAY_Multiple(data = metapopulations[which(names(metapopulations) %in% c("B1A04_B1_4", "B4A14_B4_2"))],
                                             order.q = seq(0.1,2,0.1), Alltime = TRUE)
-head(output_metapopulations_q, 10)
+head(output_two_metapopulations_q, 10)
 ```
 
 ```{r, echo=F}
 metapopulations <- Data_Jena_76_metapopulations
-output_metapopulations_q <- iSTAY_Multiple(data = metapopulations[which(names(metapopulations) %in% c("B1A04_B1_4", "B4A14_B4_2"))],
+output_two_metapopulations_q <- iSTAY_Multiple(data = metapopulations[which(names(metapopulations) %in% c("B1A04_B1_4", "B4A14_B4_2"))],
                                             order.q = seq(0.1,2,0.1), Alltime = TRUE)
-head(output_metapopulations_q, 10)
+head(output_two_metapopulations_q, 10)
 ```
 
-The output above includes the group name (`Dataset`), the order q (`Order_q`), and the corresponding stability and synchrony measures (`Gamma`, `Alpha`, `Beta` stability, and `Synchrony`).  
-
-To obtain the stability and synchrony profiles, run the following code:
+The following code returns the gamma, alpha, and beta stability profiles, as well as synchrony profiles for the two selected metapopulations.
 
 ```{r, fig.align='center', fig.width = 7, fig.height = 4.5}
-ggiSTAY_qprofile(output = output_metapopulations_q)
+ggiSTAY_qprofile(output = output_two_metapopulations_q)
 ```
 
-## Exammple 8: Assessing the relationships between diversity and gamma, alpha, and beta stability, as well as synchrony based on 76 metapoulations
+<br><br>
 
-To obtain the diversity–stability relationship plot, first combine the diversity information with the output of `Stay_Multiple()`.  
-The following code demonstrates this process and displays only the first ten rows of the result: 
+## Exammple 8: Assessing the relationships between diversity and gamma, alpha, and beta stability, as well as synchrony, based on 76 metapopulations
+
+Run the following code to compute the gamma, alpha, and beta stability, as well as synchrony values, at orders q = 1 and q = 2 for all 76 metapopulations. The corresponding diversity (log2_sowndiv) and block identifiers are also included. The block identifier is used to set the `by_group` argument; it colors points by group and serves as the random effect for both intercept and slope when the Linear Mixed Model is selected in `ggiSTAY_analysis`. Only the first ten rows of the output are displayed.
 
 ```{r, eval=FALSE}
 output_metapopulations_div <- iSTAY_Multiple(data = metapopulations,
@@ -466,22 +453,19 @@ output_metapopulations_div <- data.frame(output_metapopulations_div,
                                    strsplit(output_metapopulations_div[,1],"_"))[,2])
 head(output_metapopulations_div, 10)
 ```
+
+The following code returns the relationships between diversity and gamma, alpha, and beta stability, as well as synchrony, based on 20 metapopulations.
 
 ```{r,fig.width = 8, fig.height=9.5}
 ggiSTAY_analysis(output=output_metapopulations_div, x_variable="log2_sowndiv",
                     by_group="block", model="LMM")
 ```
 
-
+<br><br>
 
 ## Example 9: Plotting stability and synchrony profiles at each hierarchical level 
 
-Based on biomass data and the corresponding structure matrix, `iSTAY_Hier()` computes the stability of each hierarchical level for a specified order q.  
-The function `ggiSTAY_qprofile()` is used to plot the stability profile.  
-
-In the following example, order q is set from 0.1 to 2.0 in increments of 0.1, using 21 years of biomass data.  
-
-To illustrate, run the following code to display the first ten rows of the output:
+Run the following code to compute the gamma, alpha, and beta stability, as well as the synchrony, of order q = 0.1 to q = 2 in increments 0.1 for each hierarchical level.  The table includes the following information: Hier_level  (hierarchical level; Level 1: population, Level 2: community, Level 3: block, and level 4: overall data), Order_q, Gamma, Alpha, Beta Stability, and Synchrony values. Only the first ten rows of the output are displayed.
 
 ```{r, eval=F}
 data("Data_Jena_462_populations")
@@ -502,9 +486,7 @@ output_hier_q <- iSTAY_Hier(data = Data_Jena_462_populations,
 head(cbind(output_hier_q[,1:2], round(output_hier_q[,3:6],3)), 10)
 ```
 
-The output above includes the hierarchical level (`Hier_level`), the order q (`Order_q`), and the corresponding stability measures for each level (`Gamma`, `Alpha`, `Beta` stability, and `Synchrony`).  
-
-To obtain the gamma and alpha stability profiles at each hierarchical level, as well as the decomposition of the overall stability profile and the synchrony profile across hierarchical levels, run the following code: 
+Run the following code to display two figures: The first figure shows the gamma stability profile at Level 4 and alpha stability profiles for the other three levels. The second figure consists of two subfigures: one illustrates the decomposition of gamma stability profile into Level-1 alpha stability profile and beta stability profiles at Levels 1 to 3, while the other displays the synchrony profiles at each level.
 
 ```{r, fig.align='left', fig.width = 5, fig.height = 3}
 hierplot <- ggiSTAY_qprofile(output=output_hier_q)
@@ -515,18 +497,19 @@ hierplot[[1]]
 hierplot[[2]]
 ```
 
+<br><br>
 
 ## References
 
-Anne Chao, Robert K. Colwell, Johnny Shia. (2025)
+Chao, A., Colwell, R. K., Shia J., Thorn, S., Yang, M.-Y., Mitesser, O., et al. (2025)
 A continuum of information-based temporal stability measures and their decomposition across hierarchical level.
 doi:https://doi.org/10.1101/2025.08.20.671203
 
-Roscher C. Schumacher, J., Baade, J. et al. (2004)
-The role of biodiversity for element cycling and trophic interactions: an experimental approach in a grassland community Basic and Applied Ecology, 5, 107-121. https://doi.org/10.1078/1439-1791-00216
+Roscher C. Schumacher, J., Baade, J., Wilcke, W., Gleixner, G., Weisser, W. W. et al. (2004). The role of biodiversity for element cycling and trophic interactions: an experimental approach in a grassland community. Basic and Applied Ecology, 5, 107–121.
 
-Weisser, W. W., Roscher, C., Meyer, S. T., et al. (2017) Biodiversity effects on ecosystem functioning in a 15-year grassland experiment: Patterns, mechanisms, and open questions. Basic and Applied Ecology, 23, 1-73. https://doi.org/10.1016/j.baae.2017.06.002
+Wagg, C., Roscher, C., Weigelt, A., Vogel, A., Ebeling, A., De Luca, E. et al. (2022) Biodiversity–stability relationships strengthen over time in a long-term grassland experiment. Nature Communications, 13, 7752.  
 
-Wagg, C., Roscher, C., Weigelt, A. et al. (2022) Biodiversity–stability relationships strengthen over time in a long-term grassland experiment. Nature Communications 13, 7752. https://doi.org/10.1038/s41467-022-35189-2
+Weisser, W. W., Roscher, C., Meyer, S. T., Ebeling, A., Luo, G., Allan, E. et al. (2017). Biodiversity effects on ecosystem functioning in a 15-year grassland experiment: Patterns, mechanisms, and open questions. Basic and Applied Ecology, 23, 1–73.
+
 
 

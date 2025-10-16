@@ -25,9 +25,9 @@ iSTAY_Single(
 }
 \value{
 a dataframe with columns: \cr
-Dataset--the input dataset \cr
-Order_q--order of stability \cr
-Stability--stability measures of order q
+Dataset: the input dataset \cr
+Order_q: order of stability \cr
+Stability: stability measures of order q
 }
 \description{
 \code{iSTAY_Single} computes the stability of order q for a single time series.
