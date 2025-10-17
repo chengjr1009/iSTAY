@@ -54,7 +54,7 @@ Specifically, `iSTAY` features the following measures for three types of analyse
 
 If you publish your work based on the results from the `iSTAY` package, you should make references to the following methodology paper and the `iSTAY` package.
 
-<li> Chao, A., Colwell, R. K., Shia J., Thorn, S., Yang, M.-Y., Mitesser, O., et al. (2025) A continuum of information-based temporal stability measures and their decomposition across hierarchical level. BioRxiv < https://doi.org/10.1101/2025.08.20.671203>
+<li> Chao, A., Colwell, R. K., Shia J., Thorn, S., Yang, M.-Y., Mitesser, O., et al. (2025) A continuum of information-based temporal stability measures and their decomposition across hierarchical level. BioRxiv < https://doi.org/10.1101/2025.08.20.671203 >
 
 <li> Chao, A., Hwang, Y.-T., and Shia, J. (2025). `iSTAY` package: information-based stability and synchrony measures. Available from CRAN. </li>
 
