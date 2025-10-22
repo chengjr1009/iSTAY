@@ -24,7 +24,9 @@ Description: Provides functions to to compute a continuum of information-based m
  as well as their associated synchrony, based on species (or species assemblage)
  biomass or other key variables. When biodiversity data are available, the package
  also enables the assessment of the corresponding diversity–stability relationships.
- All measures are applicable in both temporal and spatial contexts.
+ All measures are applicable in both temporal and spatial contexts. The theoretical
+ and methodological background is detailed in Chao et al. (2025) 
+ <doi:10.1101/2025.08.20.671203>.
 License: GPL (>= 3)
 Imports: ggplot2 (>= 3.5.0),
          stringr,
