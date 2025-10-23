@@ -26,7 +26,7 @@ if (requireNamespace("knitr", quietly = TRUE)) {
   warning("Package 'knitr' not available; vignette chunk options not set.")
 }
 old_options <- options(width = 200, digits = 3)
-on.exit(options(old_options))
+
 paste0 <- base::paste0
 paste  <- base::paste
 
@@ -235,7 +235,9 @@ individual_plots <- do.call(rbind, Data_Jena_20_metacommunities)
 output_two_plots_q <- iSTAY_Single(data = individual_plots[which(rownames(individual_plots) %in% c("B1_4.B1A04", "B4_2.B4A14")),],
                                order.q=seq(0.1,2,0.1), 
                                Alltime = TRUE)
-head(output_two_plots_q, 10)
+
+head(cbind(output_two_plots_q[,1:2],"Stability"=round(output_two_plots_q[,3],3)), 10)
+
 ```
 
 Run the following code to compare the stability profiles of the two selected plots:
@@ -260,14 +262,15 @@ colnames(output_individual_plots_div)[1] <- c("Dataset")
 head(output_individual_plots_div, 10)
 ```
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, digits=3}
 output_individual_plots_div <- iSTAY_Single(data = individual_plots, order.q = c(1,2), Alltime = TRUE)
 output_individual_plots_div <- data.frame(output_individual_plots_div,
                                 log2_sowndiv = log2(as.numeric(do.call(rbind,
                                                    strsplit(output_individual_plots_div[,1],"[._]+"))[,2])),
                                 block=do.call(rbind, strsplit(output_individual_plots_div[,1],"[._]+"))[,1])
 colnames(output_individual_plots_div)[1] <- c("Dataset")
-head(output_individual_plots_div, 10)
+head(cbind(output_individual_plots_div[,1:2],"Stability"=round(output_individual_plots_div[,3],3),output_individual_plots_div[,4:5]), 10)
+
 ```
 
 The following code returns the diversity-stability relationships based on all 76 individual plots.
@@ -295,7 +298,8 @@ head(output_two_populations_q, 10)
 individual_populations <- do.call(rbind, Data_Jena_76_metapopulations)
 output_two_populations_q <- iSTAY_Single(data = individual_populations[which(rownames(individual_populations) %in% c("B1A06_B1_16.BM_Ant.odo", "B1A06_B1_16.BM_Cam.pat")),],
                                        order.q=seq(0.1,2,0.1), Alltime=TRUE)
-head(output_two_populations_q, 10)
+
+head(cbind(output_two_populations_q[,1:2],"Stability"=round(output_two_populations_q[,3],3)), 10)
 ```
 
 Run the following code to compare the stability profiles of the two selected populations:
@@ -330,7 +334,9 @@ output_individual_populations_div <- data.frame(output_individual_populations_di
                                       strsplit(output_individual_populations_div[,1],"[._]+"))[,3])),
                               block = do.call(rbind,
                                     strsplit(output_individual_populations_div[,1],"[._]+"))[,2])
-head(output_individual_populations_div, 10)
+
+head(cbind(output_individual_populations_div[,1:2],"Stability"=round(output_individual_populations_div[,3],3),output_individual_populations_div[,4:5]), 10)
+
 ```
 
 The following code returns the diversity-stability relationships based on all 462 individual populations.
@@ -452,6 +458,7 @@ output_metapopulations_div <- data.frame(output_metapopulations_div,
                              block = do.call(rbind,
                                    strsplit(output_metapopulations_div[,1],"_"))[,2])
 head(output_metapopulations_div, 10)
+
 ```
 
 The following code returns the relationships between diversity and gamma, alpha, and beta stability, as well as synchrony, based on 20 metapopulations.
@@ -484,6 +491,7 @@ output_hier_q <- iSTAY_Hier(data = Data_Jena_462_populations,
                             structure = Data_Jena_hierarchical_structure,
                            order.q=seq(0.1,2,0.1), Alltime=TRUE)
 head(cbind(output_hier_q[,1:2], round(output_hier_q[,3:6],3)), 10)
+on.exit(options(old_options)) # Restore user options to comply with CRAN policy
 ```
 
 Run the following code to display two figures: The first figure shows the gamma stability profile at Level 4 and alpha stability profiles for the other three levels. The second figure consists of two subfigures: one illustrates the decomposition of gamma stability profile into Level-1 alpha stability profile and beta stability profiles at Levels 1 to 3, while the other displays the synchrony profiles at each level.
@@ -502,8 +510,7 @@ hierplot[[2]]
 ## References
 
 Chao, A., Colwell, R. K., Shia J., Thorn, S., Yang, M.-Y., Mitesser, O., et al. (2025)
-A continuum of information-based temporal stability measures and their decomposition across hierarchical level.
-[doi:10.1101/2025.08.20.671203](https://doi.org/10.1101/2025.08.20.671203)
+A continuum of information-based temporal stability measures and their decomposition across hierarchical level. *BioRxiv* [doi:10.1101/2025.08.20.671203](https://doi.org/10.1101/2025.08.20.671203)
 
 Roscher C. Schumacher, J., Baade, J., Wilcke, W., Gleixner, G., Weisser, W. W. et al. (2004). The role of biodiversity for element cycling and trophic interactions: an experimental approach in a grassland community. Basic and Applied Ecology, 5, 107–121.
 
