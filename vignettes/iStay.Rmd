@@ -492,6 +492,7 @@ output_hier_q <- iSTAY_Hier(data = Data_Jena_462_populations,
                            order.q=seq(0.1,2,0.1), Alltime=TRUE)
 head(cbind(output_hier_q[,1:2], round(output_hier_q[,3:6],3)), 10)
 on.exit(options(old_options)) # Restore user options to comply with CRAN policy
+
 ```
 
 Run the following code to display two figures: The first figure shows the gamma stability profile at Level 4 and alpha stability profiles for the other three levels. The second figure consists of two subfigures: one illustrates the decomposition of gamma stability profile into Level-1 alpha stability profile and beta stability profiles at Levels 1 to 3, while the other displays the synchrony profiles at each level.
